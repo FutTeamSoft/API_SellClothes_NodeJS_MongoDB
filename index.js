@@ -1,5 +1,5 @@
 require("dotenv").config();
-const routes = require("./src/routes/user.routes.js");
+const routes = require("./src/routes/user.js");
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
@@ -11,6 +11,8 @@ app.use(
   })
 );
 app.use(bodyParser.json());
+
+const use = require("./src/routes/user.js");
 
 //Connect Database
 mongoose.connect(mongoString);
@@ -27,7 +29,7 @@ database.once("connected", () => {
 app.use(express.json());
 
 //Router
-app.use("/api", routes);
+app.use("/users", use);
 
 const port = process.env.PORT || process.env.APP_PORT;
 app.listen(port, () => {

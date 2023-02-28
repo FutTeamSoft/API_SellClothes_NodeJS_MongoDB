@@ -65,7 +65,7 @@ const ProductSchema = new mongoose.Schema({
 
 //SizeProduct
 const SizeProductSchema = new mongoose.Schema({
-  name: {
+  TenSize: {
     type: String,
     required: true,
     trim: true,
