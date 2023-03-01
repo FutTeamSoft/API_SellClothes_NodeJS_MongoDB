@@ -22,6 +22,15 @@ const useController = {
       res.status(500).json(err); //HTTP REQUEST CODE
     }
   },
+  //Lấy tất cả size
+  getAllSize: async (req, res) => {
+    try {
+      const allSize = await SizeProduct.find();
+      res.status(200).json(allSize);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
 };
 
 module.exports = useController;

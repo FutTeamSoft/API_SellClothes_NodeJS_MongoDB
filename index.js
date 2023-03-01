@@ -1,9 +1,10 @@
-require("dotenv").config();
-const routes = require("./src/routes/user.js");
+const dotenv = require("dotenv");
+dotenv.config();
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const mongoString = process.env.DATABASE_URL;
+
 const app = express();
 app.use(
   bodyParser.urlencoded({
@@ -11,13 +12,13 @@ app.use(
   })
 );
 app.use(bodyParser.json());
-
-const use = require("./src/routes/user.js");
+const users = require("./src/routes/user.js");
 
 //Connect Database
 mongoose.connect(mongoString);
 const database = mongoose.connection;
 
+//error sẽ được gọi khi gặp error.
 database.on("error", (error) => {
   console.log(error);
 });
@@ -29,7 +30,7 @@ database.once("connected", () => {
 app.use(express.json());
 
 //Router
-app.use("/users", use);
+app.use("/users", users);
 
 const port = process.env.PORT || process.env.APP_PORT;
 app.listen(port, () => {
