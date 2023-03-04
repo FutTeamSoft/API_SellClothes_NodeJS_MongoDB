@@ -22,6 +22,7 @@ router.get(
   "/GetAllProductBySex/:nameSex",
   productController.getAllProductBySex
 );
+router.get("/latest/:quality", productController.getProductsByquality);
 //GET ALL PRODUCT BY SEX AND PRODUCT TYPE
 router.get(
   "/getAllProductBySexAndPType",

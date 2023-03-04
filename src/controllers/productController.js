@@ -129,6 +129,18 @@ const productController = {
       res.status(500).json(err.message);
     }
   },
+  //get product latest flow quality
+  getProductsByquality : async (req, res) => {
+    try {
+      const quality = parseInt(req.params.quality); // lấy giá trị limit từ req.params
+      const products = await Product.find({ StatusProduct: 1 })//tìm sản phẩm đang còn hàng
+        .sort({ CreateDate: -1 })
+        .limit(quality);
+      res.status(200).json(products);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
 };
 
 module.exports = productController;
