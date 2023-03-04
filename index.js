@@ -3,35 +3,43 @@ dotenv.config();
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const jwt = require('jsonwebtoken');
+const bcryptjs = require('bcryptjs')
 const mongoString = process.env.DATABASE_URL;
-
 const app = express();
+
+//==============================//
+app.use(bodyParser.json());
+app.use(express.json());
+app.use(cookieParser())
 app.use(
   bodyParser.urlencoded({
     extended: true,
   })
 );
-app.use(bodyParser.json());
+//================================//
+//khai báo controller
+const accounts = require("./src/routes/account.js");
 const users = require("./src/routes/user.js");
+//Router
+app.use("/account", accounts);
+app.use("/users", users);
 
+//=================================//
+mongoose.set ('strictQuery', true);//trang thái true sẽ tắt cảnh báo trên mongoos 6
 //Connect Database
 mongoose.connect(mongoString);
 const database = mongoose.connection;
-
+database.once("connected", () => {
+  console.log("Database Connected");
+});
 //error sẽ được gọi khi gặp error.
 database.on("error", (error) => {
   console.log(error);
 });
 
-database.once("connected", () => {
-  console.log("Database Connected");
-});
-
-app.use(express.json());
-
-//Router
-app.use("/users", users);
-
+//==================================//
 const port = process.env.PORT || process.env.APP_PORT;
 app.listen(port, () => {
   console.log("Server up and running on PORT: ", port);
