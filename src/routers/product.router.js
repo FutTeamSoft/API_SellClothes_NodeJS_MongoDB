@@ -19,5 +19,7 @@ router.get("/GetAllProductType", productController.getAllProductType);
 router.post("/AddProductType", productController.addProductType);
 //GET ALL PRODUCT BY ID SEX
 router.get("/GetAllProductBySex", productController.getAllProductBySex);
+//
+router.get('/latest/:quality', productController.getProductsByquality);
 //GET ALL PRODUCT BY SEX AND PRODUCT TYPE
 module.exports = router;
