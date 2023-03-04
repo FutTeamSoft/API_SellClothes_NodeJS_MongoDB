@@ -42,6 +42,48 @@ const {
         res.status(500).json(err);
       }
     },
+
+    loginCustomer: async (req, res) => {
+      try {
+        const { Email, PasswordUser } = req.body;
+  
+        //kiểm tra e mail có tồn tại không
+        const checkEmail = await Account.findOne({ Email });
+        if (!checkEmail) {
+          return res.status(400).json({ message: 'Email không tồn tại' });
+        }
+  
+        // kiểm tra mật khẩu
+        const checkpass = await bcrypt.compare(PasswordUser, checkEmail.PasswordUser);
+        if (!checkpass) {
+          return res.status(400).json({ message: 'Mật khẩu không đúng' });
+        }
+  
+        const account = new Account();
+        // tạo và đăng kí token bằng thư viện jwt
+        const payload = {
+          Account: {
+            id: Account.id,
+          },
+        };
+        //với lệnh jwt.sign để tạo token chứa đối tượng id của khách hàng
+        jwt.sign(
+          payload,
+          process.env.JWT_SECRET,
+          { expiresIn: '1h' },
+          (err, token) => {
+            if (err) throw err;
+            res.json({
+              message:"Đăng nhập thành công!",
+              account, 
+              token 
+            });
+          }
+        );
+      } catch (err) {
+        res.status(500).json(err);
+      }
+    },
   };
   
   module.exports = accountController;
