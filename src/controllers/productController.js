@@ -106,6 +106,29 @@ const productController = {
       res.status(500).json(err.message);
     }
   },
+  //Get All Product By NameSex + Product Type
+  getAllProductBySexAndPType: async (req, res) => {
+    try {
+      const nameSex = req.body.NameSex;
+      const nameProductType = req.body.NameProductType;
+      const sex = await Sex.findOne({ NameSex: nameSex });
+      const productType = await ProductType.find({
+        NameProductType: nameProductType,
+        Sex: sex._id,
+      }).populate({
+        path: "Sex",
+      });
+      if (!productType) {
+        return res.status(404).json({ message: "Product type not found" });
+      }
+      const products = await Product.find({
+        ProductType: productType,
+      }).populate({ path: "ProductType", populate: { path: "Sex" } });
+      res.status(200).json(products);
+    } catch (err) {
+      res.status(500).json(err.message);
+    }
+  },
 };
 
 module.exports = productController;

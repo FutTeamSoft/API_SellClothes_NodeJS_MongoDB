@@ -23,5 +23,8 @@ router.get(
   productController.getAllProductBySex
 );
 //GET ALL PRODUCT BY SEX AND PRODUCT TYPE
-
+router.get(
+  "/getAllProductBySexAndPType",
+  productController.getAllProductBySexAndPType
+);
 module.exports = router;
