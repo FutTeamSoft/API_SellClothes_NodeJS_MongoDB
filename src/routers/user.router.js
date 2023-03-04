@@ -1,13 +1,14 @@
 const userController = require("../controllers/userController.js");
 const router = require("express").Router();
 
-//ADD SIZE PRODUCT
-router.post("/AddSizeProduct", userController.addSizeProduct);
-//GET ALL SIZE PRODUCT
-router.get("/GetAllSize", userController.getAllSize);
+//ADD CUSTOMER
 router.post("/addCustomer", userController.addCustomer);
+//LOGIN
 router.post("/login", userController.loginCustomer);
+//UPDATE INFO CUSTOMER BY ID
 router.put("/updateCustommer/:id", userController.updateCustomer);
+//ADD FEEDBACK
 router.post("/addFeedback", userController.addFeedback);
+//GET FEEDBACK
 router.get("/getFeedback", userController.getFeedback);
 module.exports = router;
