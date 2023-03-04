@@ -20,14 +20,12 @@ app.use(
 );
 //================================//
 //khai báo controller
-const accounts = require("./src/routes/account.js");
+// const accounts = require("./src/routes/account.js");
 const users = require("./src/routes/user.js");
-const feedback = require("./src/routes/feedback");
+// const feedback = require("./src/routes/feedback");
 
 //Router
-app.use("/account", accounts);
 app.use("/users", users);
-app.use("/feedback", feedback);
 
 //=================================//
 mongoose.set ('strictQuery', true);//trang thái true sẽ tắt cảnh báo trên mongoos 6
