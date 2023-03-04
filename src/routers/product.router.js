@@ -18,6 +18,10 @@ router.get("/GetAllProductType", productController.getAllProductType);
 //ADD PRODUCT TYPE
 router.post("/AddProductType", productController.addProductType);
 //GET ALL PRODUCT BY ID SEX
-router.get("/GetAllProductBySex", productController.getAllProductBySex);
+router.get(
+  "/GetAllProductBySex/:nameSex",
+  productController.getAllProductBySex
+);
 //GET ALL PRODUCT BY SEX AND PRODUCT TYPE
+
 module.exports = router;

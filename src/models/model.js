@@ -14,11 +14,13 @@ const ProductTypeSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  Sex: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Sex",
-    required: true,
-  },
+  Sex: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Sex",
+      required: true,
+    },
+  ],
 });
 
 //Product
@@ -226,16 +228,16 @@ const InvoiceDetailsSchema = new mongoose.Schema({
 });
 
 //Tạo model
-const Sex = mongoose.model("Sex", SexSchema);
-const ProductType = mongoose.model("ProductType", ProductTypeSchema);
-const Product = mongoose.model("Product", ProductSchema);
-const ProductDetail = mongoose.model("ProductDetail", ProductDetailSchema);
-const SizeProduct = mongoose.model("SizeProduct", SizeProductSchema);
-const AdminAccount = mongoose.model("AdminAccount", AdminAccountSchema);
-const FeedBack = mongoose.model("FeedBack", FeedBackSchema);
-const Account = mongoose.model("Account", AccountSchema);
-const Invoice = mongoose.model("Invoice", InvoiceSchema);
-const InvoiceDetails = mongoose.model("InvoiceDetails", InvoiceDetailsSchema);
+let Sex = mongoose.model("Sex", SexSchema);
+let ProductType = mongoose.model("ProductType", ProductTypeSchema);
+let Product = mongoose.model("Product", ProductSchema);
+let ProductDetail = mongoose.model("ProductDetail", ProductDetailSchema);
+let SizeProduct = mongoose.model("SizeProduct", SizeProductSchema);
+let AdminAccount = mongoose.model("AdminAccount", AdminAccountSchema);
+let FeedBack = mongoose.model("FeedBack", FeedBackSchema);
+let Account = mongoose.model("Account", AccountSchema);
+let Invoice = mongoose.model("Invoice", InvoiceSchema);
+let InvoiceDetails = mongoose.model("InvoiceDetails", InvoiceDetailsSchema);
 //Export các model
 module.exports = {
   Sex,
