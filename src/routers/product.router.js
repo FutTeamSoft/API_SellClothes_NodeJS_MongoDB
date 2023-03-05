@@ -17,7 +17,7 @@ router.post("/AddSex", productController.addSex);
 router.get("/GetAllProductType", productController.getAllProductType);
 //ADD PRODUCT TYPE
 router.post("/AddProductType", productController.addProductType);
-//GET ALL PRODUCT BY ID SEX
+//GET ALL PRODUCT BY NameSex
 router.get(
   "/GetAllProductBySex/:nameSex",
   productController.getAllProductBySex
