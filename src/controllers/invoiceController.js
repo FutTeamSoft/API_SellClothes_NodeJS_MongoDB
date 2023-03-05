@@ -65,6 +65,60 @@ const {
           res.status(500).json({ error: error.message });
         }
       },
+      //get all invoice
+      getAllInvoices : async (req, res) => {
+        try {
+          const invoices = await Invoice.find();
+          res.json(invoices);
+        } catch (error) {
+          res.status(500).json({ error: error.message });
+        }
+      },
+      //update status invoice
+      updateInvoiceStatus : async (req, res) => {
+        try {
+          const invoiceId = req.params.invoiceId;//lấy id invoice
+          const { StatusInvoice } = req.body;
+
+          const currentInvoice = await Invoice.findById(invoiceId);
+          const updatedStatus = !currentInvoice.StatusInvoice;
+          const updatedInvoice = await Invoice.findByIdAndUpdate(
+            invoiceId,
+            { StatusInvoice: updatedStatus },
+            { new: true }
+          );
+          res.json(updatedInvoice);
+        } catch (error) {
+          res.status(500).json({ error: error.message });
+        }
+      },
+      //update status invoice
+      updateInvoicePaid : async (req, res) => {
+        try {
+          const invoiceId = req.params.invoiceId;
+          const { Paid } = req.body;
+          const currentInvoice = await Invoice.findById(invoiceId);
+          const updatedPaid = !currentInvoice.Paid;// chuyển trạng thái để đưa vào db
+          const updatedInvoice = await Invoice.findByIdAndUpdate(
+            invoiceId,
+            { Paid: updatedPaid },
+            { new: true }
+          );
+          res.json(updatedInvoice);
+        } catch (error) {
+          res.status(500).json({ error: error.message });
+        }
+      },
+      //get Invoice History By CustomerId
+      getInvoiceHistoryByCustomerId : async (req, res) => {
+        try {
+          const customerId = req.params.customerId;
+          const invoices = await Invoice.find({ AccountID: customerId });
+          res.json(invoices);
+        } catch (error) {
+          res.status(500).json({ error: error.message });
+        }
+      },
   };
   
   module.exports = invoiceController;

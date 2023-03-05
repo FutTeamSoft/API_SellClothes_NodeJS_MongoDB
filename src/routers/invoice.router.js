@@ -1,7 +1,14 @@
 const invoiceController = require("../controllers/invoiceController");
 const router = require("express").Router();
 
-//ADD SIZE PRODUCT
+//add invoice
 router.post("/createInvoice", invoiceController.createInvoice);
-//GET ALL PRODUCT BY SEX AND PRODUCT TYPE
+//get  all invoice
+router.get("/getInvoice", invoiceController.getAllInvoices);
+//update status invoice
+router.put("/updateInvoiceStatus/:invoiceId", invoiceController.updateInvoiceStatus);
+//update status invoice
+router.put("/updateInvoicePaid/:invoiceId", invoiceController.updateInvoicePaid);
+//getInvoiceHistoryByCustomerId
+router.get("/getInvoiceHistoryByCustomerId/:customerId", invoiceController.getInvoiceHistoryByCustomerId);
 module.exports = router;
