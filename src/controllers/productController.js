@@ -87,14 +87,46 @@ const productController = {
       res.status(500).json(err);
     }
   },
-  //Get All Product By ID Sex
+  //Get All Product By Name Sex
   getAllProductBySex: async (req, res) => {
     try {
-      const idSex = req.params.idSex;
-      const allProductByIdSex = await Product.find(idSex);
-      res.status(200).json(allProductByIdSex);
+      const nameSex = req.params.nameSex;
+      const sex = await Sex.findOne({ NameSex: nameSex });
+      const productTypes = await ProductType.find({ Sex: sex._id });
+      const products = await Product.find({
+        ProductType: { $in: productTypes },
+      }).populate({
+        path: "ProductType",
+        populate: {
+          path: "Sex",
+        },
+      });
+      res.status(200).json(products);
     } catch (err) {
-      res.status(500).json(err);
+      res.status(500).json(err.message);
+    }
+  },
+  //Get All Product By NameSex + Product Type
+  getAllProductBySexAndPType: async (req, res) => {
+    try {
+      const nameSex = req.body.NameSex;
+      const nameProductType = req.body.NameProductType;
+      const sex = await Sex.findOne({ NameSex: nameSex });
+      const productType = await ProductType.find({
+        NameProductType: nameProductType,
+        Sex: sex._id,
+      }).populate({
+        path: "Sex",
+      });
+      if (!productType) {
+        return res.status(404).json({ message: "Product type not found" });
+      }
+      const products = await Product.find({
+        ProductType: productType,
+      }).populate({ path: "ProductType", populate: { path: "Sex" } });
+      res.status(200).json(products);
+    } catch (err) {
+      res.status(500).json(err.message);
     }
   },
   //get product latest flow quality
