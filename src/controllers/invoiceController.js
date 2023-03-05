@@ -27,7 +27,7 @@ const {
             products, // là mãng chứa chi tiết sản phẩm 
           } = req.body;
       
-          // Create a new invoice
+          // thêm mới hóa đơn 
           const invoice = new Invoice({
             InvoiceNameReceiver,
             InvoiceAddressReceiver,
@@ -114,6 +114,16 @@ const {
         try {
           const customerId = req.params.customerId;
           const invoices = await Invoice.find({ AccountID: customerId });
+          res.json(invoices);
+        } catch (error) {
+          res.status(500).json({ error: error.message });
+        }
+      },
+      //get Invoice History By CustomerId
+      getInvoiceDetailByInvoiceId : async (req, res) => {
+        try {
+          const InvoiceID = req.params.InvoiceID;
+          const invoices = await InvoiceDetails.find({ InvoiceID: InvoiceID });
           res.json(invoices);
         } catch (error) {
           res.status(500).json({ error: error.message });

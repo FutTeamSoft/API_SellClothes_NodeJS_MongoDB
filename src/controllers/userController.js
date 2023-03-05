@@ -153,6 +153,62 @@ const useController = {
       res.status(500).json(err);
     }
   },
+  addAdmin: async (req, res) => {
+    try {
+      const { UserNameAdmin, PasswordAdmin} =
+        req.body;
+      // hàm mã hóa mật khẩu
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(PasswordAdmin, salt);
+      const newAdminAccount = new AdminAccount({
+        UserNameAdmin,
+        PasswordAdmin: hashedPassword,
+      });
+      const savedAdminAccount = await newAdminAccount.save();
+      res.status(200).json(savedAdminAccount);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
+  loginAdmin: async (req, res) => {
+    try {
+      const { UserNameAdmin, PasswordAdmin } = req.body;
+      const checkdata = await AdminAccount.findOne({ UserNameAdmin });
+      // kiểm tra mật khẩu
+      const checkpass = await bcrypt.compare(
+        PasswordAdmin,
+        checkdata.PasswordAdmin
+      );
+      if (!checkpass) {
+        return res.status(400).json({ message: "Mật khẩu không đúng" });
+      }
+      // tạo và đăng kí token bằng thư viện jwt
+      const payload = {
+        Account: {
+          id: AdminAccount.id,
+        },
+      };
+      //với lệnh jwt.sign để tạo token chứa đối tượng id của khách hàng
+      jwt.sign(
+        payload,
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" },
+        (err, token) => {
+          if (err) throw err;
+          res.json({
+            message: "Đăng nhập thành công!",
+            account: {
+              id: checkdata._id,
+              UserNameAdmin: checkdata.UserNameAdmin,
+              PasswordAdmin: checkdata.PasswordAdmin,
+              token,
+            },
+          });
+        }
+      );
+    } catch (err) {
+      res.status(500).json(err);
+    }}
 };
 
 module.exports = useController;

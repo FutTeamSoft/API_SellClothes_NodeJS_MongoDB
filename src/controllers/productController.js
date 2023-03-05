@@ -100,7 +100,7 @@ const productController = {
         populate: {
           path: "Sex",
         },
-      });
+      });   
       res.status(200).json(products);
     } catch (err) {
       res.status(500).json(err.message);
@@ -136,6 +136,15 @@ const productController = {
       const products = await Product.find({ StatusProduct: 1 })//tìm sản phẩm đang còn hàng
         .sort({ CreateDate: -1 })//hàm sort sắp xếp theo thứ tự giảm dần của ngày nhập vào
         .limit(quality);
+      res.status(200).json(products);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  },
+  getProductsByName : async (req, res) => {
+    try {
+      const name = parseInt(req.params.name); // lấy giá trị limit từ req.params
+      const products = await Product.find({ name })//tìm sản phẩm đang còn hàng
       res.status(200).json(products);
     } catch (err) {
       res.status(500).json({ message: err.message });

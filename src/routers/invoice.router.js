@@ -11,4 +11,6 @@ router.put("/updateInvoiceStatus/:invoiceId", invoiceController.updateInvoiceSta
 router.put("/updateInvoicePaid/:invoiceId", invoiceController.updateInvoicePaid);
 //getInvoiceHistoryByCustomerId
 router.get("/getInvoiceHistoryByCustomerId/:customerId", invoiceController.getInvoiceHistoryByCustomerId);
+//getInvoiceDetailByInvoiceId
+router.get("/getInvoiceDetailByInvoiceId/:InvoiceID", invoiceController.getInvoiceDetailByInvoiceId);
 module.exports = router;

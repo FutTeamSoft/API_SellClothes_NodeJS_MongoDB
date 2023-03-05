@@ -18,14 +18,12 @@ router.get("/GetAllProductType", productController.getAllProductType);
 //ADD PRODUCT TYPE
 router.post("/AddProductType", productController.addProductType);
 //GET ALL PRODUCT BY NameSex
-router.get(
-  "/GetAllProductBySex/:nameSex",
-  productController.getAllProductBySex
-);
+router.get("/GetAllProductBySex/:nameSex",productController.getAllProductBySex);
+//get new prodcut by quality
 router.get("/latest/:quality", productController.getProductsByquality);
 //GET ALL PRODUCT BY SEX AND PRODUCT TYPE
-router.get(
-  "/getAllProductBySexAndPType",
-  productController.getAllProductBySexAndPType
-);
+router.get("/getAllProductBySexAndPType",productController.getAllProductBySexAndPType);
+//get new prodcut by quality
+router.get("/getProductsByName/:name", productController.getProductsByName);
 module.exports = router;
+

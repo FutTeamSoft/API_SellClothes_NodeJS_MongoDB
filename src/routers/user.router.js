@@ -13,4 +13,8 @@ router.post("/addFeedback", userController.addFeedback);
 router.get("/getFeedback", userController.getFeedback);
 //get all account
 router.get("/getAllAccount", userController.getAllAccount);
+//get all account
+router.post("/addAdmin", userController.addAdmin);
+//LOGIN
+router.post("/loginAdmin", userController.loginAdmin);
 module.exports = router;
