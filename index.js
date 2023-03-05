@@ -20,10 +20,12 @@ app.use(
 //khai báo controller
 const users = require("./src/routers/user.router.js");
 const products = require("./src/routers/product.router.js");
+const invoices = require("./src/routers/invoice.router");
 
 //Router
 app.use("/users", users);
 app.use("/products", products);
+app.use("/invoices", invoices);
 //=================================//
 mongoose.set("strictQuery", true); //trang thái true sẽ tắt cảnh báo trên mongoos 6
 //Connect Database

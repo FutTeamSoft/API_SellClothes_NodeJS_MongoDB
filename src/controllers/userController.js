@@ -145,6 +145,14 @@ const useController = {
       res.status(500).json(err);
     }
   },
+  getAllAccount: async (req, res) => {
+    try {
+      const allAccount = await Account.find();
+      res.status(200).json(allAccount);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
 };
 
 module.exports = useController;

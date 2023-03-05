@@ -11,4 +11,6 @@ router.put("/updateCustommer/:id", userController.updateCustomer);
 router.post("/addFeedback", userController.addFeedback);
 //GET FEEDBACK
 router.get("/getFeedback", userController.getFeedback);
+//get all account
+router.get("/getAllAccount", userController.getAllAccount);
 module.exports = router;

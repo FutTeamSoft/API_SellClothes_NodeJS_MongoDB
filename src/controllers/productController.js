@@ -102,7 +102,7 @@ const productController = {
     try {
       const quality = parseInt(req.params.quality); // lấy giá trị limit từ req.params
       const products = await Product.find({ StatusProduct: 1 })//tìm sản phẩm đang còn hàng
-        .sort({ CreateDate: -1 })
+        .sort({ CreateDate: -1 })//hàm sort sắp xếp theo thứ tự giảm dần của ngày nhập vào
         .limit(quality);
       res.status(200).json(products);
     } catch (err) {
