@@ -4,6 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const moment = require("moment")
 const mongoString = process.env.DATABASE_URL;
 const app = express();
 
@@ -21,11 +22,13 @@ app.use(
 const users = require("./src/routers/user.router.js");
 const products = require("./src/routers/product.router.js");
 const invoices = require("./src/routers/invoice.router");
+const statistics = require("./src/routers/statistics.router");
 
 //Router
 app.use("/users", users);
 app.use("/products", products);
 app.use("/invoices", invoices);
+app.use("/statistics", statistics);
 //=================================//
 mongoose.set("strictQuery", true); //trang thái true sẽ tắt cảnh báo trên mongoos 6
 //Connect Database

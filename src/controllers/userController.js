@@ -17,7 +17,9 @@ const useController = {
     try {
       const newFeedback = new FeedBack(req.body);
       const savedFeedback = await newFeedback.save();
-      res.status(200).json(savedFeedback);
+      res.status(200).json({
+        message:"Thêm thành công!"
+      });
     } catch (err) {
       res.status(500).json(err);
     }
@@ -25,8 +27,14 @@ const useController = {
 
   getFeedback: async (req, res) => {
     try {
-      const allFeedback = await FeedBack.find();
-      res.status(200).json(allFeedback);
+      const allFeedback = await FeedBack.find().lean();
+      const feedback = allFeedback.map(feedback => ({
+        id: feedback._id,
+        FullNameUserFeedBack: feedback.FullNameUserFeedBack,
+        EmailUserFeedBack: feedback.EmailUserFeedBack,
+        DescribeFeedBack: feedback.PhoneNumber,
+       }));
+      res.status(200).json(feedback);
     } catch (err) {
       res.status(500).json(err);
     }
@@ -56,7 +64,17 @@ const useController = {
       });
       //lưu account vừa thêm
       const savedAccount = await newAccount.save();
-      res.status(200).json(savedAccount);
+      res.status(200).json({
+          message: "Đăng kí thành công!",
+          account: {
+            id: savedAccount._id,
+            FullName: savedAccount.FullName,
+            Email: savedAccount.Email,
+            PhoneNumber: savedAccount.PhoneNumber,
+            AddressUser: savedAccount.AddressUser,
+            PasswordUser: savedAccount.PasswordUser,
+            StatusAccount: savedAccount.StatusAccount,
+      },});
     } catch (err) {
       res.status(500).json(err);
     }
@@ -97,7 +115,7 @@ const useController = {
           res.json({
             message: "Đăng nhập thành công!",
             account: {
-              _id: checkdata._id,
+              id: checkdata._id,
               FullName: checkdata.FullName,
               Email: checkdata.Email,
               PhoneNumber: checkdata.PhoneNumber,
@@ -136,19 +154,36 @@ const useController = {
         const salt = await bcrypt.genSalt(10);
         customer.PasswordUser = await bcrypt.hash(PasswordUser, salt);
       }
-
-      // lưu mật khẩu vào data
+      // lưu custommer vào data
       await customer.save();
-
-      res.json(customer);
+      res.status(200).json({
+        message: "Cập nhật thành công",
+        account: {
+          id: customer._id,
+          FullName: customer.FullName,
+          Email: customer.Email,
+          PhoneNumber: customer.PhoneNumber,
+          AddressUser: customer.AddressUser,
+          PasswordUser: customer.PasswordUser,
+          StatusAccount: customer.StatusAccount,
+    },});
     } catch (err) {
       res.status(500).json(err);
     }
   },
   getAllAccount: async (req, res) => {
     try {
-      const allAccount = await Account.find();
-      res.status(200).json(allAccount);
+      const allAccount = await Account.find().lean();
+      const accounts = allAccount.map(account => ({
+        id: account._id,
+        FullName: account.FullName,
+        Email: account.Email,
+        PhoneNumber: account.PhoneNumber,
+        AddressUser: account.AddressUser,
+        PasswordUser: account.PasswordUser,
+        StatusAccount: account.StatusAccount
+       }));
+      res.status(200).json(accounts);
     } catch (err) {
       res.status(500).json(err);
     }

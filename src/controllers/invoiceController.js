@@ -10,6 +10,7 @@ const {
     Invoice,
     InvoiceDetails,
   } = require("../models/model.js");
+  const moment = require('moment');
   const invoiceController = {
     createInvoice :async (req, res) => {
         try {
@@ -68,7 +69,20 @@ const {
       //get all invoice
       getAllInvoices : async (req, res) => {
         try {
-          const invoices = await Invoice.find();
+          const allinvoices = await Invoice.find().lean();
+          const invoices = allinvoices.map(invoice => ({
+            id: invoice._id,
+            InvoiceNameReceiver: invoice.InvoiceNameReceiver,
+            InvoiceAddressReceiver: invoice.InvoiceAddressReceiver,
+            InvoicePhoneReceiver: invoice.InvoicePhoneReceiver,
+            InvoiceDate:moment(invoice.InvoiceDate).format('DD/MM/YYYY') ,
+            TotalInvoice: invoice.TotalInvoice,
+            PaymentsInvoice: invoice.PaymentsInvoice,
+            StatusInvoice: invoice.StatusInvoice,
+            Paid: invoice.Paid,
+            NoteInvoice: invoice.NoteInvoice,
+            AccountID: invoice.AccountID,
+           }));
           res.json(invoices);
         } catch (error) {
           res.status(500).json({ error: error.message });
@@ -87,7 +101,19 @@ const {
             { StatusInvoice: updatedStatus },
             { new: true }
           );
-          res.json(updatedInvoice);
+          res.json({
+            id: updatedInvoice._id,
+            InvoiceNameReceiver: updatedInvoice.InvoiceNameReceiver,
+            InvoiceAddressReceiver: updatedInvoice.InvoiceAddressReceiver,
+            InvoicePhoneReceiver: updatedInvoice.InvoicePhoneReceiver,
+            InvoiceDate:moment(updatedInvoice.InvoiceDate).format('DD/MM/YYYY') ,
+            TotalInvoice: updatedInvoice.TotalInvoice,
+            PaymentsInvoice: updatedInvoice.PaymentsInvoice,
+            StatusInvoice: updatedInvoice.StatusInvoice,
+            Paid: updatedInvoice.Paid,
+            NoteInvoice: updatedInvoice.NoteInvoice,
+            AccountID: updatedInvoice.AccountID,
+          });
         } catch (error) {
           res.status(500).json({ error: error.message });
         }
@@ -104,17 +130,46 @@ const {
             { Paid: updatedPaid },
             { new: true }
           );
-          res.json(updatedInvoice);
+          res.json({
+            id: updatedInvoice._id,
+            InvoiceNameReceiver: updatedInvoice.InvoiceNameReceiver,
+            InvoiceAddressReceiver: updatedInvoice.InvoiceAddressReceiver,
+            InvoicePhoneReceiver: updatedInvoice.InvoicePhoneReceiver,
+            InvoiceDate:moment(updatedInvoice.InvoiceDate).format('DD/MM/YYYY') ,
+            TotalInvoice: updatedInvoice.TotalInvoice,
+            PaymentsInvoice: updatedInvoice.PaymentsInvoice,
+            StatusInvoice: updatedInvoice.StatusInvoice,
+            Paid: updatedInvoice.Paid,
+            NoteInvoice: updatedInvoice.NoteInvoice,
+            AccountID: updatedInvoice.AccountID,
+          });
         } catch (error) {
           res.status(500).json({ error: error.message });
         }
       },
       //get Invoice History By CustomerId
-      getInvoiceHistoryByCustomerId : async (req, res) => {
+      getInvoiceHistoryByCustomerId: async (req, res) => {
         try {
           const customerId = req.params.customerId;
           const invoices = await Invoice.find({ AccountID: customerId });
-          res.json(invoices);
+      
+          const formattedInvoices = invoices.map(invoice => {
+            return {
+              id: invoice._id,
+              InvoiceNameReceiver: invoice.InvoiceNameReceiver,
+              InvoiceAddressReceiver: invoice.InvoiceAddressReceiver,
+              InvoicePhoneReceiver: invoice.InvoicePhoneReceiver,
+              InvoiceDate: moment(invoice.InvoiceDate).format('DD/MM/YYYY'),
+              TotalInvoice: invoice.TotalInvoice,
+              PaymentsInvoice: invoice.PaymentsInvoice,
+              StatusInvoice: invoice.StatusInvoice,
+              Paid: invoice.Paid,
+              NoteInvoice: invoice.NoteInvoice,
+              AccountID: invoice.AccountID,
+            };
+          });
+      
+          res.json(formattedInvoices);
         } catch (error) {
           res.status(500).json({ error: error.message });
         }
@@ -124,7 +179,19 @@ const {
         try {
           const InvoiceID = req.params.InvoiceID;
           const invoices = await InvoiceDetails.find({ InvoiceID: InvoiceID });
-          res.json(invoices);
+
+          const formattedInvoices = invoices.map(invoice => {
+            return {
+              id: invoice._id,
+              SizeProductID: invoice.SizeProductID,
+              ProductID: invoice.ProductID,
+              InvoiceID: invoice.InvoiceID,
+              Quantity: invoice.Quantity,
+              UnitPrice: invoice.UnitPrice,
+            };
+          });
+      
+          res.json(formattedInvoices);
         } catch (error) {
           res.status(500).json({ error: error.message });
         }
