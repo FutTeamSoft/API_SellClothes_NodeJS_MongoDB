@@ -4,7 +4,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-const moment = require("moment")
+const moment = require("moment");
+const cors = require("cors");
 const mongoString = process.env.DATABASE_URL;
 const app = express();
 
@@ -18,6 +19,13 @@ app.use(
   })
 );
 //================================//
+//Cors
+app.use(
+  cors({
+    origin: "*",
+  })
+);
+
 //khai báo controller
 const users = require("./src/routers/user.router.js");
 const products = require("./src/routers/product.router.js");
