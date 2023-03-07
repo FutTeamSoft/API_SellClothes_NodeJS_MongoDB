@@ -18,7 +18,7 @@ const useController = {
       const newFeedback = new FeedBack(req.body);
       const savedFeedback = await newFeedback.save();
       res.status(200).json({
-        message:"Thêm thành công!"
+        message: "Thêm thành công!",
       });
     } catch (err) {
       res.status(500).json(err);
@@ -28,12 +28,12 @@ const useController = {
   getFeedback: async (req, res) => {
     try {
       const allFeedback = await FeedBack.find().lean();
-      const feedback = allFeedback.map(feedback => ({
+      const feedback = allFeedback.map((feedback) => ({
         id: feedback._id,
         FullNameUserFeedBack: feedback.FullNameUserFeedBack,
         EmailUserFeedBack: feedback.EmailUserFeedBack,
         DescribeFeedBack: feedback.PhoneNumber,
-       }));
+      }));
       res.status(200).json(feedback);
     } catch (err) {
       res.status(500).json(err);
@@ -65,16 +65,17 @@ const useController = {
       //lưu account vừa thêm
       const savedAccount = await newAccount.save();
       res.status(200).json({
-          message: "Đăng kí thành công!",
-          account: {
-            id: savedAccount._id,
-            FullName: savedAccount.FullName,
-            Email: savedAccount.Email,
-            PhoneNumber: savedAccount.PhoneNumber,
-            AddressUser: savedAccount.AddressUser,
-            PasswordUser: savedAccount.PasswordUser,
-            StatusAccount: savedAccount.StatusAccount,
-      },});
+        message: "Đăng kí thành công!",
+        account: {
+          id: savedAccount._id,
+          FullName: savedAccount.FullName,
+          Email: savedAccount.Email,
+          PhoneNumber: savedAccount.PhoneNumber,
+          AddressUser: savedAccount.AddressUser,
+          PasswordUser: savedAccount.PasswordUser,
+          StatusAccount: savedAccount.StatusAccount,
+        },
+      });
     } catch (err) {
       res.status(500).json(err);
     }
@@ -166,7 +167,8 @@ const useController = {
           AddressUser: customer.AddressUser,
           PasswordUser: customer.PasswordUser,
           StatusAccount: customer.StatusAccount,
-    },});
+        },
+      });
     } catch (err) {
       res.status(500).json(err);
     }
@@ -174,15 +176,15 @@ const useController = {
   getAllAccount: async (req, res) => {
     try {
       const allAccount = await Account.find().lean();
-      const accounts = allAccount.map(account => ({
+      const accounts = allAccount.map((account) => ({
         id: account._id,
         FullName: account.FullName,
         Email: account.Email,
         PhoneNumber: account.PhoneNumber,
         AddressUser: account.AddressUser,
         PasswordUser: account.PasswordUser,
-        StatusAccount: account.StatusAccount
-       }));
+        StatusAccount: account.StatusAccount,
+      }));
       res.status(200).json(accounts);
     } catch (err) {
       res.status(500).json(err);
@@ -190,8 +192,7 @@ const useController = {
   },
   addAdmin: async (req, res) => {
     try {
-      const { UserNameAdmin, PasswordAdmin} =
-        req.body;
+      const { UserNameAdmin, PasswordAdmin } = req.body;
       // hàm mã hóa mật khẩu
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(PasswordAdmin, salt);
@@ -243,7 +244,8 @@ const useController = {
       );
     } catch (err) {
       res.status(500).json(err);
-    }}
+    }
+  },
 };
 
 module.exports = useController;
