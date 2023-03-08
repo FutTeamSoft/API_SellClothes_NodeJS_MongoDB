@@ -46,7 +46,7 @@ const useController = {
       // kiểm tra email đã tồn tại
       const checkEmail = await Account.findOne({ Email });
       if (checkEmail) {
-        return res.status(400).json({ message: "Email đã tồn tại!" });
+        return res.status(200).json({ message: "Email đã tồn tại!" });
       }
 
       // hàm mã hóa mật khẩu
@@ -88,7 +88,7 @@ const useController = {
       //kiểm tra e mail có tồn tại không
       const checkdata = await Account.findOne({ Email });
       if (!checkdata) {
-        return res.status(400).json({ message: "Email không tồn tại" });
+        return res.status(200).json({ message: "Email không tồn tại" });
       }
 
       // kiểm tra mật khẩu
@@ -97,7 +97,7 @@ const useController = {
         checkdata.PasswordUser
       );
       if (!checkpass) {
-        return res.status(400).json({ message: "Mật khẩu không đúng" });
+        return res.status(200).json({ message: "Mật khẩu không đúng" });
       }
 
       // tạo và đăng kí token bằng thư viện jwt
@@ -113,7 +113,7 @@ const useController = {
         { expiresIn: "1h" },
         (err, token) => {
           if (err) throw err;
-          res.json({
+          res.status(200).json({
             message: "Đăng nhập thành công!",
             account: {
               id: checkdata._id,
@@ -141,7 +141,7 @@ const useController = {
       // kiểm tra khách hàng tồn tại hay k
       const customer = await Account.findById(id);
       if (!customer) {
-        return res.status(404).json({ message: "Không tìm thấy khách hàng" });
+        return res.status(200).json({ message: "Không tìm thấy khách hàng" });
       }
 
       // cập nhật khách hàng
@@ -216,7 +216,7 @@ const useController = {
         checkdata.PasswordAdmin
       );
       if (!checkpass) {
-        return res.status(400).json({ message: "Mật khẩu không đúng" });
+        return res.status(200).json({ message: "Mật khẩu không đúng" });
       }
       // tạo và đăng kí token bằng thư viện jwt
       const payload = {
