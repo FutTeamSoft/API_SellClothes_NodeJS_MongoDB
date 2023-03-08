@@ -214,7 +214,7 @@ const productController = {
         path: "Sex",
       });
       if (!productType) {
-        return res.status(404).json({ message: "Product type not found" });
+        return res.status(200).json({ message: "Product type not found" });
       }
       const products = await Product.find({
         ProductType: productType,
