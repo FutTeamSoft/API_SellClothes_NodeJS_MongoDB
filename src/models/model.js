@@ -22,7 +22,14 @@ const ProductTypeSchema = new mongoose.Schema({
     },
   ],
 });
-
+//SizeProduct
+const SizeProductSchema = new mongoose.Schema({
+  TenSize: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+});
 //Product
 const ProductSchema = new mongoose.Schema({
   NameProduct: {
@@ -65,22 +72,13 @@ const ProductSchema = new mongoose.Schema({
   },
 });
 
-//SizeProduct
-const SizeProductSchema = new mongoose.Schema({
-  TenSize: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-});
-
 //Produt Detail
 const ProductDetailSchema = new mongoose.Schema({
-  ProductID: {
+  Product: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Product",
   },
-  SizeID: {
+  SizeProduct: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "SizeProduct",
   },

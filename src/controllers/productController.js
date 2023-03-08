@@ -35,43 +35,51 @@ const productController = {
   //Get All Product
   getAllProduct: async (req, res) => {
     try {
-      const allProduct = await Product.find()
-        .lean()
+      const allProductDetails = await ProductDetail.find()
         .populate({
-          path: "ProductType",
-          populate: {
-            path: "Sex",
-          },
-        });
-      const products = allProduct.map((allProduct) => ({
-        id: allProduct._id,
-        NameProduct: allProduct.NameProduct,
-        PriceProduct: allProduct.PriceProduct,
-        ImageProduct: allProduct.ImageProduct,
-        Description: allProduct.Description,
-        StatusProduct: allProduct.StatusProduct,
-        CreateDate: moment(allProduct.CreateDate)
-          .tz("Asia/Ho_Chi_Minh")
-          .format("YYYY-MM-DD HH:mm:ss"),
-        UpdateDate: moment(allProduct.UpdateDate)
-          .tz("Asia/Ho_Chi_Minh")
-          .format("YYYY-MM-DD HH:mm:ss"),
-        ProductType: {
-          id: allProduct.ProductType._id,
-          NameProductType: allProduct.ProductType.NameProductType,
-          Sex: {
-            id:
-              allProduct.ProductType.Sex.length > 0
-                ? allProduct.ProductType.Sex[0]._id
-                : null,
-            NameSex:
-              allProduct.ProductType.Sex.length > 0
-                ? allProduct.ProductType.Sex[0].NameSex
-                : null,
+          path: "Product",
+          populate: { path: "ProductType", populate: { path: "Sex" } },
+        })
+        .populate({ path: "SizeProduct" });
+
+      const allproductdl = allProductDetails.map((allproduct) => ({
+        id: allproduct._id,
+        Product: {
+          id: allproduct.Product._id,
+          NameProduct: allproduct.Product.NameProduct,
+          PriceProduct: allproduct.Product.PriceProduct,
+          ImageProduct: allproduct.Product.ImageProduct,
+          Description: allproduct.Product.Description,
+          StatusProduct: allproduct.Product.StatusProduct,
+          CreateDate: moment(allproduct.Product.CreateDate)
+            .tz("Asia/Ho_Chi_Minh")
+            .format("YYYY-MM-DD HH:mm:ss"),
+          UpdateDate: moment(allproduct.Product.UpdateDate)
+            .tz("Asia/Ho_Chi_Minh")
+            .format("YYYY-MM-DD HH:mm:ss"),
+          ProductType: {
+            id: allproduct.Product.ProductType._id,
+            NameProductType: allproduct.Product.ProductType.NameProductType,
+            Sex: {
+              id:
+                allproduct.Product.ProductType.Sex.length > 0
+                  ? allproduct.Product.ProductType.Sex[0]._id
+                  : null,
+              NameSex:
+                allproduct.Product.ProductType.Sex.length > 0
+                  ? allproduct.Product.ProductType.Sex[0].NameSex
+                  : null,
+            },
           },
         },
+        SizeProduct: {
+          id: allproduct.SizeProduct._id,
+          TenSize: allproduct.SizeProduct.TenSize,
+        },
+        SoLuongTon: allproduct.SoLuongTon,
       }));
-      res.status(200).json(products);
+
+      res.status(200).json(allproductdl);
     } catch (err) {
       res.status(500).json(err.message);
     }
@@ -268,6 +276,15 @@ const productController = {
       res.status(500).json({ message: err.message });
     }
   },
+  //Add Product Details
+  addProductDetails: async (req, res) => {
+    try {
+      const newProductDetail = new ProductDetail(req.body);
+      const saveProductDetail = await newProductDetail.save();
+      res.status(200).json(saveProductDetail);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
 };
-
 module.exports = productController;

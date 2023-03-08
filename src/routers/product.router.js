@@ -31,4 +31,6 @@ router.get(
 );
 //get new prodcut by quality
 router.get("/getProductsByName/:name", productController.getProductsByName);
+//Add product Details
+router.post("/addProductDetails", productController.addProductDetails);
 module.exports = router;
