@@ -35,6 +35,40 @@ const productController = {
   //Get All Product
   getAllProduct: async (req, res) => {
     try {
+      const allProducts = await Product.find().populate({
+        path: "ProductType",
+        populate: { path: "Sex" },
+      });
+      const allProduct = allProducts.map((product) => ({
+        id: product._id,
+        NameProduct: product.NameProduct,
+        PriceProduct: product.PriceProduct,
+        ImageProduct: product.ImageProduct,
+        Description: product.Description,
+        StatusProduct: product.StatusProduct,
+        CreateDate: moment(product.CreateDate)
+          .tz("Asia/Ho_Chi_Minh")
+          .format("YYYY-MM-DD HH:mm:ss"),
+        UpdateDate: moment(product.UpdateDate)
+          .tz("Asia/Ho_Chi_Minh")
+          .format("YYYY-MM-DD HH:mm:ss"),
+        ProductType: {
+          id: product.ProductType._id,
+          NameProductType: product.ProductType.NameProductType,
+          Sex: {
+            id: product.ProductType.Sex[0]._id,
+            NameSex: product.ProductType.Sex[0].NameSex,
+          },
+        },
+      }));
+      res.status(200).json(allProduct);
+    } catch (err) {
+      res.status(500).json(err.message);
+    }
+  },
+  //Get All Product Detail
+  getAllProductDetail: async (req, res) => {
+    try {
       const allProductDetails = await ProductDetail.find()
         .populate({
           path: "Product",
@@ -201,6 +235,56 @@ const productController = {
       res.status(500).json(err.message);
     }
   },
+  //Get All Product By ID_Sex
+  getAllProductByIDSex: async (req, res) => {
+    try {
+      const ID_Sex = req.params.IDSex;
+      const sex = await Sex.findOne({ ID_Sex }).lean();
+      const productTypes = await ProductType.find({ Sex: sex._id }).lean();
+      const products = await Product.find({
+        ProductType: { $in: productTypes },
+      }).populate({
+        path: "ProductType",
+        populate: {
+          path: "Sex",
+        },
+      });
+      const productBySex = products.map((product) => ({
+        id: product._id,
+        NameProduct: product.NameProduct,
+        PriceProduct: product.PriceProduct,
+        ImageProduct: product.ImageProduct,
+        Description: product.Description,
+        StatusProduct: product.StatusProduct,
+        CreateDate: moment(product.CreateDate)
+          .tz("Asia/Ho_Chi_Minh")
+          .format("YYYY-MM-DD HH:mm:ss"),
+        UpdateDate: moment(product.UpdateDate)
+          .tz("Asia/Ho_Chi_Minh")
+          .format("YYYY-MM-DD HH:mm:ss"),
+        ProductType: {
+          id: product.ProductType !== null ? product.ProductType._id : null,
+          NameProductType:
+            product.ProductType !== null
+              ? product.ProductType.NameProductType
+              : null,
+          Sex: {
+            id:
+              product.ProductType && product.ProductType.Sex
+                ? product.ProductType.Sex[0]._id
+                : null,
+            NameSex:
+              product.ProductType && product.ProductType.Sex
+                ? product.ProductType.Sex[0].NameSex
+                : null,
+          },
+        },
+      }));
+      res.status(200).json(productBySex);
+    } catch (err) {
+      res.status(500).json(err.message);
+    }
+  },
   //Get All Product By NameSex + Product Type
   getAllProductBySexAndPType: async (req, res) => {
     try {
@@ -209,6 +293,60 @@ const productController = {
       const sex = await Sex.findOne({ NameSex: nameSex });
       const productType = await ProductType.find({
         NameProductType: nameProductType,
+        Sex: sex._id,
+      }).populate({
+        path: "Sex",
+      });
+      if (!productType) {
+        return res.status(200).json({ message: "Product type not found" });
+      }
+      const products = await Product.find({
+        ProductType: productType,
+      }).populate({ path: "ProductType", populate: { path: "Sex" } });
+      const productByST = products.map((product) => ({
+        id: product._id,
+        NameProduct: product.NameProduct,
+        PriceProduct: product.PriceProduct,
+        ImageProduct: product.ImageProduct,
+        Description: product.Description,
+        StatusProduct: product.StatusProduct,
+        CreateDate: moment(product.CreateDate)
+          .tz("Asia/Ho_Chi_Minh")
+          .format("YYYY-MM-DD HH:mm:ss"),
+        UpdateDate: moment(product.UpdateDate)
+          .tz("Asia/Ho_Chi_Minh")
+          .format("YYYY-MM-DD HH:mm:ss"),
+        ProductType: {
+          id: product.ProductType !== null ? product.ProductType._id : null,
+          NameProductType:
+            product.ProductType !== null
+              ? product.ProductType.NameProductType
+              : null,
+          Sex: {
+            id:
+              product.ProductType && product.ProductType.Sex
+                ? product.ProductType.Sex[0]._id
+                : null,
+            NameSex:
+              product.ProductType && product.ProductType.Sex
+                ? product.ProductType.Sex[0].NameSex
+                : null,
+          },
+        },
+      }));
+      res.status(200).json(productByST);
+    } catch (err) {
+      res.status(500).json(err.message);
+    }
+  },
+  //Get All Product by ID_Sex and ID_ProductType
+  getAllProductByIDSexAndIDType: async (req, res) => {
+    try {
+      const IDSex = req.params.IDSex;
+      const IDProductType = req.params.IDProductType;
+      const sex = await Sex.findOne({ _id: IDSex });
+      const productType = await ProductType.find({
+        _id: IDProductType,
         Sex: sex._id,
       }).populate({
         path: "Sex",
