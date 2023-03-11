@@ -8,7 +8,11 @@ const moment = require("moment");
 const cors = require("cors");
 const mongoString = process.env.DATABASE_URL;
 const app = express();
-
+global.__basedir = __dirname;
+var corsOptions = {
+  origin: "https://ptud-api.fteamlp.top/images/",
+};
+app.use(cors(corsOptions));
 //==============================//
 app.use(bodyParser.json());
 app.use(express.json());
@@ -31,12 +35,13 @@ const users = require("./src/routers/user.router.js");
 const products = require("./src/routers/product.router.js");
 const invoices = require("./src/routers/invoice.router");
 const statistics = require("./src/routers/statistics.router");
-
+const images = require("./src/routers/image.router.js");
 //Router
 app.use("/users", users);
 app.use("/products", products);
 app.use("/invoices", invoices);
 app.use("/statistics", statistics);
+app.use("/images", images);
 //=================================//
 mongoose.set("strictQuery", true); //trang thái true sẽ tắt cảnh báo trên mongoos 6
 //Connect Database

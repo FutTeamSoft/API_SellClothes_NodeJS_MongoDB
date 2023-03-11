@@ -35,15 +35,21 @@ const productController = {
   //Get All Product
   getAllProduct: async (req, res) => {
     try {
-      const allProducts = await Product.find().populate({
-        path: "ProductType",
-        populate: { path: "Sex" },
-      });
+      const allProducts = await Product.find()
+        .populate({
+          path: "ProductType",
+          populate: { path: "Sex" },
+        })
+        .populate({ path: "ImageProduct" });
       const allProduct = allProducts.map((product) => ({
         id: product._id,
         NameProduct: product.NameProduct,
         PriceProduct: product.PriceProduct,
-        ImageProduct: product.ImageProduct,
+        ImageProduct: {
+          id: product.ImageProduct._id,
+          TenHinh: product.ImageProduct.TenHinh,
+          DuongDanHinh: product.ImageProduct.DuongDanHinh,
+        },
         Description: product.Description,
         StatusProduct: product.StatusProduct,
         CreateDate: moment(product.CreateDate)
@@ -72,7 +78,10 @@ const productController = {
       const allProductDetails = await ProductDetail.find()
         .populate({
           path: "Product",
-          populate: { path: "ProductType", populate: { path: "Sex" } },
+          populate: [
+            { path: "ProductType", populate: { path: "Sex" } },
+            { path: "ImageProduct" },
+          ],
         })
         .populate({ path: "SizeProduct" });
 
@@ -82,7 +91,11 @@ const productController = {
           id: allproduct.Product._id,
           NameProduct: allproduct.Product.NameProduct,
           PriceProduct: allproduct.Product.PriceProduct,
-          ImageProduct: allproduct.Product.ImageProduct,
+          ImageProduct: {
+            id: allproduct.Product.ImageProduct._id,
+            TenHinh: allproduct.Product.ImageProduct.TenHinh,
+            DuongDanHinh: allproduct.Product.ImageProduct.DuongDanHinh,
+          },
           Description: allproduct.Product.Description,
           StatusProduct: allproduct.Product.StatusProduct,
           CreateDate: moment(allproduct.Product.CreateDate)
@@ -193,17 +206,23 @@ const productController = {
       const productTypes = await ProductType.find({ Sex: sex._id }).lean();
       const products = await Product.find({
         ProductType: { $in: productTypes },
-      }).populate({
-        path: "ProductType",
-        populate: {
-          path: "Sex",
-        },
-      });
+      })
+        .populate({
+          path: "ProductType",
+          populate: {
+            path: "Sex",
+          },
+        })
+        .populate({ path: "ImageProduct" });
       const productBySex = products.map((product) => ({
         id: product._id,
         NameProduct: product.NameProduct,
         PriceProduct: product.PriceProduct,
-        ImageProduct: product.ImageProduct,
+        ImageProduct: {
+          id: product.ImageProduct._id,
+          TenHinh: product.ImageProduct.TenHinh,
+          DuongDanHinh: product.ImageProduct.DuongDanHinh,
+        },
         Description: product.Description,
         StatusProduct: product.StatusProduct,
         CreateDate: moment(product.CreateDate)
@@ -239,21 +258,27 @@ const productController = {
   getAllProductByIDSex: async (req, res) => {
     try {
       const ID_Sex = req.params.IDSex;
-      const sex = await Sex.findOne({ ID_Sex }).lean();
+      const sex = await Sex.findOne({ _id: ID_Sex });
       const productTypes = await ProductType.find({ Sex: sex._id }).lean();
       const products = await Product.find({
         ProductType: { $in: productTypes },
-      }).populate({
-        path: "ProductType",
-        populate: {
-          path: "Sex",
-        },
-      });
+      })
+        .populate({
+          path: "ProductType",
+          populate: {
+            path: "Sex",
+          },
+        })
+        .populate({ path: "ImageProduct" });
       const productBySex = products.map((product) => ({
         id: product._id,
         NameProduct: product.NameProduct,
         PriceProduct: product.PriceProduct,
-        ImageProduct: product.ImageProduct,
+        ImageProduct: {
+          id: product.ImageProduct._id,
+          TenHinh: product.ImageProduct.TenHinh,
+          DuongDanHinh: product.ImageProduct.DuongDanHinh,
+        },
         Description: product.Description,
         StatusProduct: product.StatusProduct,
         CreateDate: moment(product.CreateDate)
@@ -302,12 +327,23 @@ const productController = {
       }
       const products = await Product.find({
         ProductType: productType,
-      }).populate({ path: "ProductType", populate: { path: "Sex" } });
+      })
+        .populate({
+          path: "ProductType",
+          populate: {
+            path: "Sex",
+          },
+        })
+        .populate({ path: "ImageProduct" });
       const productByST = products.map((product) => ({
         id: product._id,
         NameProduct: product.NameProduct,
         PriceProduct: product.PriceProduct,
-        ImageProduct: product.ImageProduct,
+        ImageProduct: {
+          id: product.ImageProduct._id,
+          TenHinh: product.ImageProduct.TenHinh,
+          DuongDanHinh: product.ImageProduct.DuongDanHinh,
+        },
         Description: product.Description,
         StatusProduct: product.StatusProduct,
         CreateDate: moment(product.CreateDate)
@@ -356,12 +392,23 @@ const productController = {
       }
       const products = await Product.find({
         ProductType: productType,
-      }).populate({ path: "ProductType", populate: { path: "Sex" } });
+      })
+        .populate({
+          path: "ProductType",
+          populate: {
+            path: "Sex",
+          },
+        })
+        .populate({ path: "ImageProduct" });
       const productByST = products.map((product) => ({
         id: product._id,
         NameProduct: product.NameProduct,
         PriceProduct: product.PriceProduct,
-        ImageProduct: product.ImageProduct,
+        ImageProduct: {
+          id: product.ImageProduct._id,
+          TenHinh: product.ImageProduct.TenHinh,
+          DuongDanHinh: product.ImageProduct.DuongDanHinh,
+        },
         Description: product.Description,
         StatusProduct: product.StatusProduct,
         CreateDate: moment(product.CreateDate)
@@ -399,8 +446,50 @@ const productController = {
       const quality = parseInt(req.params.quality); // lấy giá trị limit từ req.params
       const products = await Product.find({ StatusProduct: 1 }) //tìm sản phẩm đang còn hàng
         .sort({ CreateDate: -1 }) //hàm sort sắp xếp theo thứ tự giảm dần của ngày nhập vào
-        .limit(quality);
-      res.status(200).json(products);
+        .limit(quality)
+        .populate({
+          path: "ProductType",
+          populate: {
+            path: "Sex",
+          },
+        })
+        .populate({ path: "ImageProduct" });
+      const productQTT = products.map((product) => ({
+        id: product._id,
+        NameProduct: product.NameProduct,
+        PriceProduct: product.PriceProduct,
+        ImageProduct: {
+          id: product.ImageProduct._id,
+          TenHinh: product.ImageProduct.TenHinh,
+          DuongDanHinh: product.ImageProduct.DuongDanHinh,
+        },
+        Description: product.Description,
+        StatusProduct: product.StatusProduct,
+        CreateDate: moment(product.CreateDate)
+          .tz("Asia/Ho_Chi_Minh")
+          .format("YYYY-MM-DD HH:mm:ss"),
+        UpdateDate: moment(product.UpdateDate)
+          .tz("Asia/Ho_Chi_Minh")
+          .format("YYYY-MM-DD HH:mm:ss"),
+        ProductType: {
+          id: product.ProductType !== null ? product.ProductType._id : null,
+          NameProductType:
+            product.ProductType !== null
+              ? product.ProductType.NameProductType
+              : null,
+          Sex: {
+            id:
+              product.ProductType && product.ProductType.Sex
+                ? product.ProductType.Sex[0]._id
+                : null,
+            NameSex:
+              product.ProductType && product.ProductType.Sex
+                ? product.ProductType.Sex[0].NameSex
+                : null,
+          },
+        },
+      }));
+      res.status(200).json(productQTT);
     } catch (err) {
       res.status(500).json({ message: err.message });
     }
@@ -408,8 +497,50 @@ const productController = {
   getProductsByName: async (req, res) => {
     try {
       const name = parseInt(req.params.name); // lấy giá trị limit từ req.params
-      const products = await Product.find({ name }); //tìm sản phẩm đang còn hàng
-      res.status(200).json(products);
+      const products = await Product.find({ name })
+        .populate({
+          path: "ProductType",
+          populate: {
+            path: "Sex",
+          },
+        })
+        .populate({ path: "ImageProduct" });
+      const productSearch = products.map((product) => ({
+        id: product._id,
+        NameProduct: product.NameProduct,
+        PriceProduct: product.PriceProduct,
+        ImageProduct: {
+          id: product.ImageProduct._id,
+          TenHinh: product.ImageProduct.TenHinh,
+          DuongDanHinh: product.ImageProduct.DuongDanHinh,
+        },
+        Description: product.Description,
+        StatusProduct: product.StatusProduct,
+        CreateDate: moment(product.CreateDate)
+          .tz("Asia/Ho_Chi_Minh")
+          .format("YYYY-MM-DD HH:mm:ss"),
+        UpdateDate: moment(product.UpdateDate)
+          .tz("Asia/Ho_Chi_Minh")
+          .format("YYYY-MM-DD HH:mm:ss"),
+        ProductType: {
+          id: product.ProductType !== null ? product.ProductType._id : null,
+          NameProductType:
+            product.ProductType !== null
+              ? product.ProductType.NameProductType
+              : null,
+          Sex: {
+            id:
+              product.ProductType && product.ProductType.Sex
+                ? product.ProductType.Sex[0]._id
+                : null,
+            NameSex:
+              product.ProductType && product.ProductType.Sex
+                ? product.ProductType.Sex[0].NameSex
+                : null,
+          },
+        },
+      }));
+      res.status(200).json(productSearch);
     } catch (err) {
       res.status(500).json({ message: err.message });
     }
