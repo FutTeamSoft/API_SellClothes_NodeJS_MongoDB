@@ -33,4 +33,9 @@ router.get(
 router.get("/getProductsByName/:name", productController.getProductsByName);
 //Add product Details
 router.post("/addProductDetails", productController.addProductDetails);
+//Get Detail Product By ID
+router.get(
+  "/GetDetailProductByID/:IDProduct",
+  productController.getProductDetailByIDProduct
+);
 module.exports = router;

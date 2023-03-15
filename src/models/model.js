@@ -224,7 +224,27 @@ const InvoiceDetailsSchema = new mongoose.Schema({
     default: 0,
   },
 });
-
+const CartSchema = new mongoose.Schema({
+  SizeProductID: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "SizeProduct",
+    required: true,
+  },
+  ProductID: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Product",
+    required: true,
+  },
+  AccountID: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Account",
+    required: true,
+  },
+  CartProductQuantity: {
+    type: Number,
+    required: true,
+  },
+});
 //Tạo model
 let Sex = mongoose.model("Sex", SexSchema);
 let ProductType = mongoose.model("ProductType", ProductTypeSchema);
@@ -236,6 +256,7 @@ let FeedBack = mongoose.model("FeedBack", FeedBackSchema);
 let Account = mongoose.model("Account", AccountSchema);
 let Invoice = mongoose.model("Invoice", InvoiceSchema);
 let InvoiceDetails = mongoose.model("InvoiceDetails", InvoiceDetailsSchema);
+let Cart = mongoose.model("Cart", CartSchema);
 //Export các model
 module.exports = {
   Sex,
@@ -248,4 +269,5 @@ module.exports = {
   Account,
   Invoice,
   InvoiceDetails,
+  Cart,
 };

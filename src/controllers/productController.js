@@ -286,5 +286,23 @@ const productController = {
       res.status(500).json(err);
     }
   },
+  // //Add Product into Cart
+  // addProductIntoCart: async (req, res) => {
+  //   try {
+  //     const
+  //   } catch (err) {}
+  // },
+  //GetProductDetailByIDProduct
+  getProductDetailByIDProduct: async (req, res) => {
+    try {
+      const idProduct = req.params.IDProduct;
+      const productDetail = await ProductDetail.findOne({
+        IDProduct: idProduct,
+      });
+      res.status(200).json(productDetail);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  },
 };
 module.exports = productController;
