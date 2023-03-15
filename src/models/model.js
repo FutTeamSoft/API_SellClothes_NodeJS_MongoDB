@@ -30,6 +30,18 @@ const SizeProductSchema = new mongoose.Schema({
     trim: true,
   },
 });
+//Image
+const ImageProductSchema = new mongoose.Schema({
+  TenHinh: {
+    type: String,
+    required: true,
+  },
+  DuongDanHinh: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+});
 //Product
 const ProductSchema = new mongoose.Schema({
   NameProduct: {
@@ -43,9 +55,9 @@ const ProductSchema = new mongoose.Schema({
     min: 0,
   },
   ImageProduct: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "ImageProduct",
     required: true,
-    trim: true,
   },
   CreateDate: {
     type: Date,
@@ -248,6 +260,7 @@ const CartSchema = new mongoose.Schema({
 //Tạo model
 let Sex = mongoose.model("Sex", SexSchema);
 let ProductType = mongoose.model("ProductType", ProductTypeSchema);
+let ImageProduct = mongoose.model("ImageProduct", ImageProductSchema);
 let Product = mongoose.model("Product", ProductSchema);
 let ProductDetail = mongoose.model("ProductDetail", ProductDetailSchema);
 let SizeProduct = mongoose.model("SizeProduct", SizeProductSchema);
@@ -261,6 +274,7 @@ let Cart = mongoose.model("Cart", CartSchema);
 module.exports = {
   Sex,
   ProductType,
+  ImageProduct,
   Product,
   ProductDetail,
   SizeProduct,
