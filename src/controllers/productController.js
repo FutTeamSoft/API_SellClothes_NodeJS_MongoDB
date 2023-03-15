@@ -9,6 +9,7 @@ const {
   Account,
   Invoice,
   InvoiceDetails,
+  Cart,
 } = require("../models/model.js");
 const moment = require("moment-timezone");
 moment.tz.setDefault("Asia/Ho_Chi_Minh");
@@ -555,22 +556,194 @@ const productController = {
       res.status(500).json(err);
     }
   },
-  // //Add Product into Cart
-  // addProductIntoCart: async (req, res) => {
-  //   try {
-  //     const
-  //   } catch (err) {}
-  // },
+  //Add Product into Cart
+  addProductIntoCart: async (req, res) => {
+    try {
+      const newCart = new Cart(req.body);
+      const saveNewCard = await newCart.save();
+      res.status(200).json(saveNewCard);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
+  //Get Cart By ID Account
+  getCartByIDAccount: async (req, res) => {
+    try {
+      const idAccount = req.params.idAccount;
+      const cartt = await Cart.find({ Account: idAccount })
+        .populate({
+          path: "Product",
+          populate: [
+            { path: "ProductType", populate: { path: "Sex" } },
+            { path: "ImageProduct" },
+          ],
+        })
+        .populate({ path: "Account" });
+      const carts = cartt.map((cart) => ({
+        id: cart._id,
+        Product: {
+          id: cart.Product._id,
+          NameProduct: cart.Product.NameProduct,
+          PriceProduct: cart.Product.PriceProduct,
+          ImageProduct: {
+            id: cart.Product.ImageProduct._id,
+            TenHinh: cart.Product.ImageProduct.TenHinh,
+            DuongDanHinh: cart.Product.ImageProduct.DuongDanHinh,
+          },
+          Description: cart.Product.Description,
+          StatusProduct: cart.Product.StatusProduct,
+          CreateDate: moment(cart.Product.CreateDate)
+            .tz("Asia/Ho_Chi_Minh")
+            .format("YYYY-MM-DD HH:mm:ss"),
+          UpdateDate: moment(cart.Product.UpdateDate)
+            .tz("Asia/Ho_Chi_Minh")
+            .format("YYYY-MM-DD HH:mm:ss"),
+          ProductType: {
+            id: cart.Product.ProductType._id,
+            NameProductType: cart.Product.ProductType.NameProductType,
+            Sex: {
+              id:
+                cart.Product.ProductType.Sex.length > 0
+                  ? cart.Product.ProductType.Sex[0]._id
+                  : null,
+              NameSex:
+                cart.Product.ProductType.Sex.length > 0
+                  ? cart.Product.ProductType.Sex[0].NameSex
+                  : null,
+            },
+          },
+        },
+        Account: {
+          id: cart.Account._id,
+          FullName: cart.Account.FullName,
+          Email: cart.Account.Email,
+          PhoneNumber: cart.Account.PhoneNumber,
+          AddressUser: cart.Account.AddressUser,
+        },
+        CartProductSize: cart.CartProductSize,
+        CartProductQuantity: cart.CartProductQuantity,
+      }));
+      res.status(200).json(carts);
+    } catch (err) {
+      res.status(500).json(err.message);
+    }
+  },
   //GetProductDetailByIDProduct
   getProductDetailByIDProduct: async (req, res) => {
     try {
-      const idProduct = req.params.IDProduct;
-      const productDetail = await ProductDetail.findOne({
-        IDProduct: idProduct,
-      });
-      res.status(200).json(productDetail);
+      const idProduct = req.params.idProduct;
+      const allProductDetails = await ProductDetail.find({ Product: idProduct })
+        .populate({
+          path: "Product",
+          populate: [
+            { path: "ProductType", populate: { path: "Sex" } },
+            { path: "ImageProduct" },
+          ],
+        })
+        .populate({ path: "SizeProduct" });
+      if (!allProductDetails.length) {
+        res.status(200).json({ message: "Không tìm thấy sản phẩm" });
+        return;
+      }
+      const allproductdl = allProductDetails.map((allproduct) => ({
+        id: allproduct._id,
+        Product: {
+          id: allproduct.Product._id,
+          NameProduct: allproduct.Product.NameProduct,
+          PriceProduct: allproduct.Product.PriceProduct,
+          ImageProduct: {
+            id: allproduct.Product.ImageProduct._id,
+            TenHinh: allproduct.Product.ImageProduct.TenHinh,
+            DuongDanHinh: allproduct.Product.ImageProduct.DuongDanHinh,
+          },
+          Description: allproduct.Product.Description,
+          StatusProduct: allproduct.Product.StatusProduct,
+          CreateDate: moment(allproduct.Product.CreateDate)
+            .tz("Asia/Ho_Chi_Minh")
+            .format("YYYY-MM-DD HH:mm:ss"),
+          UpdateDate: moment(allproduct.Product.UpdateDate)
+            .tz("Asia/Ho_Chi_Minh")
+            .format("YYYY-MM-DD HH:mm:ss"),
+          ProductType: {
+            id: allproduct.Product.ProductType._id,
+            NameProductType: allproduct.Product.ProductType.NameProductType,
+            Sex: {
+              id:
+                allproduct.Product.ProductType.Sex.length > 0
+                  ? allproduct.Product.ProductType.Sex[0]._id
+                  : null,
+              NameSex:
+                allproduct.Product.ProductType.Sex.length > 0
+                  ? allproduct.Product.ProductType.Sex[0].NameSex
+                  : null,
+            },
+          },
+        },
+        SizeProduct: {
+          id: allproduct.SizeProduct._id,
+          TenSize: allproduct.SizeProduct.TenSize,
+        },
+        SoLuongTon: allproduct.SoLuongTon,
+      }));
+
+      res.status(200).json(allproductdl);
+    } catch (err) {
+      res.status(500).json(err.message);
+    }
+  },
+  //Update Quantity in Cart
+  updateQuantityCard: async (req, res) => {
+    try {
+      const idAccount = req.params.idAccount;
+      const { CartProductQuantity } = req.body;
+      // Tìm kiếm bản ghi Cart dựa trên IdAccount
+      const cart = await Cart.findOne({ Account: idAccount });
+      if (!cart) {
+        return res.status(404).json({ message: "Không tìm thấy Cart" });
+      }
+
+      // Cập nhật CartProductQuantity và lưu lại bản ghi Cart
+      cart.CartProductQuantity = CartProductQuantity;
+      await cart.save();
+
+      res.status(200).json({ message: "Cập nhật thành công" });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+  //Delete Product In Cart
+  deleteProductInCart: async (req, res) => {
+    try {
+      const idProduct = req.params.idProduct;
+      const idAccount = req.params.idAccount;
+      // Tìm kiếm bản ghi Cart dựa trên IdAccount
+      const cart = await Cart.findOne({ Account: idAccount });
+      if (!cart) {
+        return res.status(404).json({ message: "Không tìm thấy Cart" });
+      }
+      const carts = await Cart.findOne({ Product: idProduct });
+      await carts.remove();
+      res.status(200).json({ msg: "Product removed from cart" });
     } catch (err) {
       res.status(500).json({ message: err.message });
+    }
+  },
+  //Delete All Product In Cart
+  deleteAllProductAllCart: async (req, res) => {
+    try {
+      const idAccount = req.params.idAccount;
+      const result = await Cart.deleteMany({ Account: idAccount });
+
+      if (result.deletedCount === 0) {
+        return res
+          .status(404)
+          .json({ message: "Không có sản phẩm trong giỏ hàng" });
+      }
+
+      res.status(200).json({ message: "All products deleted from cart" });
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).json(err);
     }
   },
 };

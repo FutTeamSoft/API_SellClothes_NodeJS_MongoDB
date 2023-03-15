@@ -47,7 +47,23 @@ router.get("/getProductsByName/:name", productController.getProductsByName);
 router.post("/addProductDetails", productController.addProductDetails);
 //Get Detail Product By ID
 router.get(
-  "/GetDetailProductByID/:IDProduct",
+  "/GetDetailProductByID/:idProduct",
   productController.getProductDetailByIDProduct
+);
+//Add Cart
+router.post("/addCart", productController.addProductIntoCart);
+//Get Cart By Account ID
+router.get("/GetCartByAccID/:idAccount", productController.getCartByIDAccount);
+//Update Quantity In Card
+router.put("/updateCart/:idAccount", productController.updateQuantityCard);
+//Delete sản phẩm theo id
+router.delete(
+  "/DeleteCartByID/:idAccount/:idProduct",
+  productController.deleteProductInCart
+);
+//Delete All Product In Cart
+router.delete(
+  "/DeleteAllProductInCart/:idAccount",
+  productController.deleteAllProductAllCart
 );
 module.exports = router;

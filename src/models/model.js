@@ -237,19 +237,18 @@ const InvoiceDetailsSchema = new mongoose.Schema({
   },
 });
 const CartSchema = new mongoose.Schema({
-  SizeProductID: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "SizeProduct",
-    required: true,
-  },
-  ProductID: {
+  Product: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Product",
     required: true,
   },
-  AccountID: {
+  Account: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Account",
+    required: true,
+  },
+  CartProductSize: {
+    type: String,
     required: true,
   },
   CartProductQuantity: {
