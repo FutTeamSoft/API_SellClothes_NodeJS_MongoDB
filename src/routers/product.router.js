@@ -66,4 +66,9 @@ router.delete(
   "/DeleteAllProductInCart/:idAccount",
   productController.deleteAllProductAllCart
 );
+//Get Product By ID Product
+router.get(
+  "/getProductByIDProduct/:idProduct",
+  productController.getProductByIDProduct
+);
 module.exports = router;

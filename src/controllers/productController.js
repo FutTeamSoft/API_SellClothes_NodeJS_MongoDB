@@ -746,5 +746,47 @@ const productController = {
       res.status(500).json(err);
     }
   },
+  //Get Product By ID Product
+  getProductByIDProduct: async (req, res) => {
+    try {
+      const idProduct = req.params.idProduct;
+      const products = await Product.find({ _id: idProduct })
+        .populate({
+          path: "ProductType",
+          populate: { path: "Sex" },
+        })
+        .populate({ path: "ImageProduct" });
+      const productById = products.map((product) => ({
+        id: product._id,
+        NameProduct: product.NameProduct,
+        PriceProduct: product.PriceProduct,
+        ImageProduct: {
+          id: product.ImageProduct._id,
+          TenHinh: product.ImageProduct.TenHinh,
+          DuongDanHinh: product.ImageProduct.DuongDanHinh,
+        },
+        Description: product.Description,
+        StatusProduct: product.StatusProduct,
+        CreateDate: moment(product.CreateDate)
+          .tz("Asia/Ho_Chi_Minh")
+          .format("YYYY-MM-DD HH:mm:ss"),
+        UpdateDate: moment(product.UpdateDate)
+          .tz("Asia/Ho_Chi_Minh")
+          .format("YYYY-MM-DD HH:mm:ss"),
+        ProductType: {
+          id: product.ProductType._id,
+          NameProductType: product.ProductType.NameProductType,
+          Sex: {
+            id: product.ProductType.Sex[0]._id,
+            NameSex: product.ProductType.Sex[0].NameSex,
+          },
+        },
+      }));
+
+      res.status(200).json(productById);
+    } catch (err) {
+      res.status(500).json(err.message);
+    }
+  },
 };
 module.exports = productController;
