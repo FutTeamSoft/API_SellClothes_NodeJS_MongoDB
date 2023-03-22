@@ -136,26 +136,44 @@ const useController = {
   updateCustomer: async (req, res) => {
     try {
       const { id } = req.params;
-      const { FullName, Email, PhoneNumber, AddressUser, PasswordUser } =
+      const { FullName, Email, PhoneNumber, AddressUser, PasswordUserOld, PassNew } =
         req.body;
-
+  
       // kiểm tra khách hàng tồn tại hay k
       const customer = await Account.findById(id);
       if (!customer) {
         return res.status(200).json({ message: "Không tìm thấy khách hàng" });
       }
-
+  
+      // kiểm tra mật khẩu hiện tại có đúng không
+      if (PasswordUserOld) {
+        const isMatch = await bcrypt.compare(PasswordUserOld, customer.PasswordUser);
+        if (!isMatch) {
+          return res.status(200).json({ message: "Mật khẩu hiện tại không đúng" });
+        }
+      }
+      if (PassNew) {
+        const cur = await bcrypt.compare(PassNew, customer.PasswordUser);
+        if (cur) {
+          return res.status(200).json({ message: "Mật khẩu không đươc trung với mật khẩu hiện tại!" });
+        }
+      }
+  
       // cập nhật khách hàng
       customer.FullName = FullName;
       customer.Email = Email;
       customer.PhoneNumber = PhoneNumber;
       customer.AddressUser = AddressUser;
-
-      // mã hóa mật khẩu mới
-      if (PasswordUser) {
+  
+      // nếu không có mật khẩu mới, giữ nguyên mật khẩu cũ
+      if (!PassNew) {
+        customer.PasswordUser = customer.PasswordUser;
+      } else {
+        // mã hóa mật khẩu mới
         const salt = await bcrypt.genSalt(10);
-        customer.PasswordUser = await bcrypt.hash(PasswordUser, salt);
+        customer.PasswordUser = await bcrypt.hash(PassNew, salt);
       }
+  
       // lưu custommer vào data
       await customer.save();
       res.status(200).json({
@@ -174,6 +192,7 @@ const useController = {
       res.status(500).json(err);
     }
   },
+  
   getAllAccount: async (req, res) => {
     try {
       const allAccount = await Account.find().lean();
