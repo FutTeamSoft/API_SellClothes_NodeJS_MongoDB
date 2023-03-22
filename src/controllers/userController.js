@@ -166,9 +166,9 @@ const useController = {
       customer.AddressUser = AddressUser;
   
       // nếu không có mật khẩu mới, giữ nguyên mật khẩu cũ
-      if (!PassNew) {
+      if (!PassNew && !PasswordUserOld) {
         customer.PasswordUser = customer.PasswordUser;
-      } else {
+      } else if(PassNew) {
         // mã hóa mật khẩu mới
         const salt = await bcrypt.genSalt(10);
         customer.PasswordUser = await bcrypt.hash(PassNew, salt);
