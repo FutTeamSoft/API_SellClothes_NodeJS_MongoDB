@@ -16,10 +16,11 @@ router.post("/login", userController.loginCustomer);
 router.post("/addFeedback", userController.addFeedback);
 //GET FEEDBACK
 router.get("/getFeedback", userController.getFeedback);
-//get all account
+//get all account 
 //get all account
 router.post("/addAdmin", userController.addAdmin);
-//LOGIN
+//LOGIN 
 router.post("/loginAdmin", userController.loginAdmin);
+router.post("/updatePasswordWithEmail/:email", userController.updatePasswordWithEmail);
 
 module.exports = router;
