@@ -146,17 +146,19 @@ const useController = {
       }
   
       // kiểm tra mật khẩu hiện tại có đúng không
-      if (PasswordUserOld) {
+      if (PasswordUserOld && PassNew) {
         const isMatch = await bcrypt.compare(PasswordUserOld, customer.PasswordUser);
         if (!isMatch) {
           return res.status(200).json({ message: "Mật khẩu hiện tại không đúng" });
         }
-      }
-      if (PassNew) {
         const cur = await bcrypt.compare(PassNew, customer.PasswordUser);
         if (cur) {
           return res.status(200).json({ message: "Mật khẩu không đươc trung với mật khẩu hiện tại!" });
         }
+      }else if(PasswordUserOld && !PassNew){
+        return res.status(200).json({ message: "Mời nhập mât khẩu mới!" });
+      }else if(!PasswordUserOld && PassNew){
+        return res.status(200).json({ message: "Mời nhập mât khẩu củ!" });
       }
   
       // cập nhật khách hàng
@@ -168,7 +170,7 @@ const useController = {
       // nếu không có mật khẩu mới, giữ nguyên mật khẩu cũ
       if (!PassNew && !PasswordUserOld) {
         customer.PasswordUser = customer.PasswordUser;
-      } else if(PassNew) {
+      } else if(PassNew && PasswordUserOld) {
         // mã hóa mật khẩu mới
         const salt = await bcrypt.genSalt(10);
         customer.PasswordUser = await bcrypt.hash(PassNew, salt);
