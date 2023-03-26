@@ -33,6 +33,21 @@ const productController = {
       res.status(500).json(err);
     }
   },
+  //Xóa Size theo ID
+  deleteSize: async (req, res) => {
+    try {
+      const idProductSize = req.params.idProductSize;
+      const productSize = await SizeProduct.findById(idProductSize);
+      if (!productSize) {
+        return res.status(404).json({ message: "Size not found" });
+      }
+
+      await SizeProduct.findByIdAndDelete(idProductSize);
+      res.status(200).json({ message: "Deleted Size Successfully!" });
+    } catch (err) {
+      res.status(500).json(err.message);
+    }
+  },
   //Get All Product
   getAllProduct: async (req, res) => {
     try {
@@ -47,9 +62,11 @@ const productController = {
         NameProduct: product.NameProduct,
         PriceProduct: product.PriceProduct,
         ImageProduct: {
-          id: product.ImageProduct._id,
-          TenHinh: product.ImageProduct.TenHinh,
-          DuongDanHinh: product.ImageProduct.DuongDanHinh,
+          id: product.ImageProduct ? product.ImageProduct._id : null,
+          TenHinh: product.ImageProduct ? product.ImageProduct.TenHinh : null,
+          DuongDanHinh: product.ImageProduct
+            ? product.ImageProduct.DuongDanHinh
+            : null,
         },
         Description: product.Description,
         StatusProduct: product.StatusProduct,
@@ -60,12 +77,19 @@ const productController = {
           .tz("Asia/Ho_Chi_Minh")
           .format("YYYY-MM-DD HH:mm:ss"),
         ProductType: {
-          id: product.ProductType._id,
-          NameProductType: product.ProductType.NameProductType,
-          Sex: {
-            id: product.ProductType.Sex[0]._id,
-            NameSex: product.ProductType.Sex[0].NameSex,
-          },
+          id: product.ProductType ? product.ProductType._id : null,
+          NameProductType: product.ProductType
+            ? product.ProductType.NameProductType
+            : null,
+          Sex:
+            product.ProductType &&
+            product.ProductType.Sex &&
+            product.ProductType.Sex[0]
+              ? {
+                  id: product.ProductType.Sex[0]._id,
+                  NameSex: product.ProductType.Sex[0].NameSex,
+                }
+              : null,
         },
       }));
       res.status(200).json(allProduct);
@@ -85,7 +109,10 @@ const productController = {
           ],
         })
         .populate({ path: "SizeProduct" });
-
+      if (!allProductDetails.length) {
+        res.status(200).json({ message: "Không tìm thấy sản phẩm" });
+        return;
+      }
       const allproductdl = allProductDetails.map((allproduct) => ({
         id: allproduct._id,
         Product: {
@@ -121,9 +148,12 @@ const productController = {
           },
         },
         SizeProduct: {
-          id: allproduct.SizeProduct._id,
-          TenSize: allproduct.SizeProduct.TenSize,
+          id: allproduct.SizeProduct ? allproduct.SizeProduct._id : null,
+          TenSize: allproduct.SizeProduct
+            ? allproduct.SizeProduct.TenSize
+            : null,
         },
+
         SoLuongTon: allproduct.SoLuongTon,
       }));
 
@@ -197,6 +227,22 @@ const productController = {
       res.status(200).json(saveProductType);
     } catch (err) {
       res.status(500).json(err);
+    }
+  },
+  //Delete Product Type
+  deleteProductType: async (req, res) => {
+    try {
+      const idProductType = req.params.idProductType;
+
+      const productType = await ProductType.findById(idProductType);
+      if (!productType) {
+        return res.status(404).json({ message: "Product Type not found" });
+      }
+
+      await ProductType.findByIdAndDelete(idProductType);
+      res.status(200).json({ message: "Deleted Product Type Successfully!" });
+    } catch (err) {
+      res.status(500).json(err.message);
     }
   },
   //Get All Product By Name Sex
@@ -312,10 +358,11 @@ const productController = {
     }
   },
   //Get All Product By NameSex + Product Type
+  //Get All Product By NameSex + Product Type
   getAllProductBySexAndPType: async (req, res) => {
     try {
-      const nameSex = req.body.NameSex;
       const nameProductType = req.body.NameProductType;
+      const nameSex = req.body.NameSex;
       const sex = await Sex.findOne({ NameSex: nameSex });
       const productType = await ProductType.find({
         NameProductType: nameProductType,
@@ -376,6 +423,7 @@ const productController = {
       res.status(500).json(err.message);
     }
   },
+
   //Get All Product by ID_Sex and ID_ProductType
   getAllProductByIDSexAndIDType: async (req, res) => {
     try {
@@ -647,20 +695,34 @@ const productController = {
   getProductDetailByIDProduct: async (req, res) => {
     try {
       const idProduct = req.params.idProduct;
-      const allProductDetails = await ProductDetail.find({ Product: idProduct })
-        .populate({
-          path: "Product",
-          populate: [
-            { path: "ProductType", populate: { path: "Sex" } },
-            { path: "ImageProduct" },
-          ],
-        })
-        .populate({ path: "SizeProduct" });
-      if (!allProductDetails.length) {
+      const allProductDetails = await ProductDetail.find({
+        Product: idProduct,
+      }).populate({
+        path: "Product",
+        populate: [
+          { path: "ProductType", populate: { path: "Sex" } },
+          { path: "ImageProduct" },
+        ],
+      });
+
+      if (allProductDetails.length === 0) {
         res.status(200).json({ message: "Không tìm thấy sản phẩm" });
         return;
       }
-      const allproductdl = allProductDetails.map((allproduct) => ({
+      // Kiểm tra xem có tồn tại SizeProduct hay không
+      if (!allProductDetails[0].SizeProduct) {
+        res.status(200).json({ message: "Không tìm thấy SizeProduct" });
+        return;
+      }
+      // Nếu SizeProduct tồn tại thì tiếp tục thực hiện populate
+      const allProductDetailsWithSize = await ProductDetail.populate(
+        allProductDetails,
+        {
+          path: "SizeProduct",
+        }
+      );
+
+      const allproductdl = allProductDetailsWithSize.map((allproduct) => ({
         id: allproduct._id,
         Product: {
           id: allproduct.Product._id,
@@ -695,9 +757,12 @@ const productController = {
           },
         },
         SizeProduct: {
-          id: allproduct.SizeProduct._id,
-          TenSize: allproduct.SizeProduct.TenSize,
+          id: allproduct.SizeProduct ? allproduct.SizeProduct._id : null,
+          TenSize: allproduct.SizeProduct
+            ? allproduct.SizeProduct.TenSize
+            : null,
         },
+
         SoLuongTon: allproduct.SoLuongTon,
       }));
 
