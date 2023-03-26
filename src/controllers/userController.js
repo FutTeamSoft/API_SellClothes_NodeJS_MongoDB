@@ -100,11 +100,10 @@ const useController = {
       if (!checkpass) {
         return res.status(200).json({ message: "Mật khẩu không đúng" });
       }
-
       // tạo và đăng kí token bằng thư viện jwt
       const payload = {
         Account: {
-          id: Account.id,
+          _id: checkdata._id,
         },
       };
       //với lệnh jwt.sign để tạo token chứa đối tượng id của khách hàng

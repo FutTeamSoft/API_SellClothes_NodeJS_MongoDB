@@ -503,6 +503,11 @@ const productController = {
           },
         })
         .populate({ path: "ImageProduct" });
+        
+        if (products.length < quality) {
+          return res.status(400).json({ message: "Không đủ sản phẩm" });
+        }
+    
       const productQTT = products.map((product) => ({
         id: product._id,
         NameProduct: product.NameProduct,
