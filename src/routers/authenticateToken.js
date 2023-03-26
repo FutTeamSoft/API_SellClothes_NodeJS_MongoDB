@@ -16,7 +16,11 @@ function authenticateToken(req, res, next) {
       }
   
       // Lưu thông tin người dùng đã xác thực vào request object để sử dụng cho các API sau này
-      req.user = user;
+     const a = req.user = user;
+
+      if (a.Account._id !== req.params.id) {
+        return res.status(200).json({ message: 'Token không hợp lệ cho khách hàng này' });
+      }
       next();
     });
 }
