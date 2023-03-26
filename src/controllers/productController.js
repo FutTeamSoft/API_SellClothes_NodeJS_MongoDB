@@ -559,13 +559,35 @@ const productController = {
   //Add Product into Cart
   addProductIntoCart: async (req, res) => {
     try {
-      const newCart = new Cart(req.body);
-      const saveNewCard = await newCart.save();
-      res.status(200).json(saveNewCard);
+      const { Product, Account, CartProductSize, CartProductQuantity } =
+        req.body;
+
+      // Tìm kiếm sản phẩm và size trong giỏ hàng
+      const cart = await Cart.findOne({ Product, CartProductSize });
+
+      if (!cart) {
+        // Nếu sản phẩm và size chưa có trong giỏ hàng, thêm sản phẩm mới
+        const newCart = new Cart({
+          Product,
+          Account,
+          CartProductQuantity,
+          CartProductSize,
+        });
+        await newCart.save();
+        res.status(200).json({ message: "Thêm vào giỏ hành thành công!" });
+      } else {
+        // Nếu sản phẩm và size đã có trong giỏ hàng, tăng số lượng sản phẩm
+        cart.CartProductQuantity += CartProductQuantity;
+        await cart.save();
+        res
+          .status(200)
+          .json({ message: "Cập nhật số lượng sản phẩm thành công!" });
+      }
     } catch (err) {
       res.status(500).json(err);
     }
   },
+
   //Get Cart By ID Account
   getCartByIDAccount: async (req, res) => {
     try {
@@ -612,13 +634,6 @@ const productController = {
                   : null,
             },
           },
-        },
-        Account: {
-          id: cart.Account._id,
-          FullName: cart.Account.FullName,
-          Email: cart.Account.Email,
-          PhoneNumber: cart.Account.PhoneNumber,
-          AddressUser: cart.Account.AddressUser,
         },
         CartProductSize: cart.CartProductSize,
         CartProductQuantity: cart.CartProductQuantity,
@@ -692,25 +707,31 @@ const productController = {
     }
   },
   //Update Quantity in Cart
-  updateQuantityCard: async (req, res) => {
+  updateCart: async (req, res) => {
     try {
-      const idAccount = req.params.idAccount;
-      const { CartProductQuantity } = req.body;
-      // Tìm kiếm bản ghi Cart dựa trên IdAccount
-      const cart = await Cart.findOne({ Account: idAccount });
+      const { idCart, Product, CartProductSize, CartProductQuantity } =
+        req.body;
+
+      // Tìm kiếm giỏ hàng dựa trên idCart và kiểm tra sản phẩm có tồn tại và trùng Size
+      const cart = await Cart.findOne({
+        _id: idCart,
+        Product,
+        CartProductSize,
+      });
       if (!cart) {
-        return res.status(404).json({ message: "Không tìm thấy Cart" });
+        return res.status(404).json({ message: "Không tìm thấy giỏ hàng" });
       }
 
-      // Cập nhật CartProductQuantity và lưu lại bản ghi Cart
+      // Cập nhật số lượng sản phẩm trong giỏ hàng
       cart.CartProductQuantity = CartProductQuantity;
       await cart.save();
 
-      res.status(200).json({ message: "Cập nhật thành công" });
+      res.status(200).json({ message: "Cập nhật giỏ hàng thành công" });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
   },
+
   //Delete Product In Cart
   deleteProductInCart: async (req, res) => {
     try {
@@ -784,6 +805,22 @@ const productController = {
       }));
 
       res.status(200).json(productById);
+    } catch (err) {
+      res.status(500).json(err.message);
+    }
+  },
+  //Get all size by product ID
+  getSizeByProduct: async (req, res) => {
+    try {
+      const idProduct = req.params.idProduct;
+      const productDetail = await ProductDetail.find({
+        Product: idProduct,
+      }).populate({ path: "SizeProduct" });
+      const sizep = productDetail.map((product) => ({
+        SizeProduct: product.SizeProduct.TenSize,
+        SoLuongTon: product.SoLuongTon,
+      }));
+      res.status(200).json(sizep);
     } catch (err) {
       res.status(500).json(err.message);
     }

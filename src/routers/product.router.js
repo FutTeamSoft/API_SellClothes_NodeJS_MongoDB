@@ -55,7 +55,7 @@ router.post("/addCart", productController.addProductIntoCart);
 //Get Cart By Account ID
 router.get("/GetCartByAccID/:idAccount", productController.getCartByIDAccount);
 //Update Quantity In Card
-router.put("/updateCart/:idAccount", productController.updateQuantityCard);
+router.patch("/updateCart/:idCart", productController.updateCart);
 //Delete sản phẩm theo id
 router.delete(
   "/DeleteCartByID/:idAccount/:idProduct",
@@ -71,4 +71,6 @@ router.get(
   "/getProductByIDProduct/:idProduct",
   productController.getProductByIDProduct
 );
+//Get All Size Product By Product ID
+router.get("/getSizeByProduct/:idProduct", productController.getSizeByProduct);
 module.exports = router;
