@@ -31,7 +31,7 @@ const invoiceController = {
       if (cartItems.length === 0) {
         return res
           .status(200)
-          .json({ message: "Không có sản phẩm trong giỏ hàng" });
+          .json({ error: true, message: "Không có sản phẩm trong giỏ hàng" });
       }
       let total = 0;
       for (let i = 0; i < cartItems.length; i++) {
@@ -53,7 +53,7 @@ const invoiceController = {
         if (!productDetail || productDetail.SoLuongTon < CartProductQuantity) {
           return res
             .status(200)
-            .json({ message: "Sản phẩm không đủ số lượng tồn" });
+            .json({ error: true, message: "Sản phẩm không đủ số lượng tồn" });
         }
       }
       let a = parseInt(Shipper);
@@ -71,7 +71,7 @@ const invoiceController = {
         AccountID: id,
       });
       // lưu hóa đơn vào database
-      await invoice.save();
+      const b = await invoice.save();
 
       // lặp lại để thêm chi tiết vào hóa đơn vì mỗi hóa đơn có nhiều chi tiết
       for (let i = 0; i < cartItems.length; i++) {
@@ -104,14 +104,29 @@ const invoiceController = {
         });
 
         // Lưu chi tiết hóa đơn vào database
-        await invoiceDetail.save();
+         await invoiceDetail.save();
       }
 
       // Xóa các chi tiết trong giỏ hàng đã được thêm vào hóa đơn
       await Cart.deleteMany({ Account: id });
-      res.status(200).json({ message: "Đặt hàng thành công!",idInvoice:invoice._id });
+      res.status(200).json({
+        error: false,
+        message: "Đặt hàng thành công!",
+        invoice: {
+          InvoiceNameReceiver: b.FullNbme,
+          InvoicebddressReceiver: b.AddressUser,
+          InvoicePhoneReceiver: b.PhoneNumber,
+          InvoiceDate: b.InvoiceDate,
+          TotalInvoice: b.TotalInvoice,
+          Shipper: b.Shipper,
+          StatusInvoice: b.StatusInvoice,
+          Paid: b.Paid,
+          NoteInvoice: b.NoteInvoice,
+          AccountID: b.AccountID,
+        },
+      });
     } catch (error) {
-      res.status(200).json({ message: error.message });
+      res.status(200).json({ error: true, message: error.message });
     }
   },
   //get all invoice
@@ -226,20 +241,71 @@ const invoiceController = {
   getInvoiceDetailByInvoiceId: async (req, res) => {
     try {
       const InvoiceID = req.params.InvoiceID;
-      const invoices = await InvoiceDetails.find({ InvoiceID: InvoiceID });
+      const invoices = await InvoiceDetails.find({
+        InvoiceID: InvoiceID,
+      }).populate("_id");
 
       const formattedInvoices = invoices.map((invoice) => {
         return {
           id: invoice._id,
           SizeProductID: invoice.SizeProductID,
           ProductID: invoice.ProductID,
+          NameProduct: invoice.ProductID, // Lấy tên sản phẩm từ đối tượng Product được kết hợp
           InvoiceID: invoice.InvoiceID,
           Quantity: invoice.Quantity,
           UnitPrice: invoice.UnitPrice,
         };
       });
+      const size = await SizeProduct.findOne({
+        _id: formattedInvoices[0].SizeProductID,
+      });
+      const fmsize = {
+        id: size._id,
+        size: size.TenSize,
+      };
+      const allProducts = await Product.findOne({
+        _id: formattedInvoices[0].ProductID,
+      })
+        .populate({
+          path: "ProductType",
+          populate: { path: "Sex" },
+        })
+        .populate({ path: "ImageProduct" });
+      const allProduct = {
+        id: allProducts._id,
+        NameProduct: allProducts.NameProduct,
+        PriceProduct: allProducts.PriceProduct,
+        ImageProduct: {
+          id: allProducts.ImageProduct._id,
+          TenHinh: allProducts.ImageProduct.TenHinh,
+          DuongDanHinh: allProducts.ImageProduct.DuongDanHinh,
+        },
+        Description: allProducts.Description,
+        StatusProduct: allProducts.StatusProduct,
+        CreateDate: moment(allProducts.CreateDate)
+          .tz("Asia/Ho_Chi_Minh")
+          .format("YYYY-MM-DD HH:mm:ss"),
+        UpdateDate: moment(allProducts.UpdateDate)
+          .tz("Asia/Ho_Chi_Minh")
+          .format("YYYY-MM-DD HH:mm:ss"),
+        ProductType: {
+          id: allProducts.ProductType._id,
+          NameProductType: allProducts.ProductType.NameProductType,
+          Sex: {
+            id: allProducts.ProductType.Sex[0]._id,
+            NameSex: allProducts.ProductType.Sex[0].NameSex,
+          },
+        },
+      };
 
-      res.json(formattedInvoices);
+      res.json({
+        id: formattedInvoices[0].id,
+        TenSize: fmsize.size,
+        InvoiceID: formattedInvoices[0].InvoiceID,
+        Quantity: formattedInvoices[0].Quantity,
+        UnitPrice: formattedInvoices[0].UnitPrice,
+        Product: allProduct,
+      });
     } catch (error) {
       res.status(200).json({ error: error.message });
     }
