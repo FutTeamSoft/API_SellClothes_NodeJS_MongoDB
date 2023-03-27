@@ -22,7 +22,7 @@ const useController = {
         message: "Thêm thành công!",
       });
     } catch (err) {
-      res.status(500).json(err);
+      res.status(200).json(err);
     }
   },
 
@@ -37,7 +37,7 @@ const useController = {
       }));
       res.status(200).json(feedback);
     } catch (err) {
-      res.status(500).json(err);
+      res.status(200).json(err);
     }
   },
   addCustomer: async (req, res) => {
@@ -78,7 +78,7 @@ const useController = {
         },
       });
     } catch (err) {
-      res.status(500).json(err);
+      res.status(200).json(err);
     }
   },
 
@@ -128,7 +128,7 @@ const useController = {
         }
       );
     } catch (err) {
-      res.status(500).json(err);
+      res.status(200).json(err);
     }
   },
 
@@ -190,7 +190,7 @@ const useController = {
         },
       });
     } catch (err) {
-      res.status(500).json(err);
+      res.status(200).json(err);
     }
   },
   
@@ -208,7 +208,7 @@ const useController = {
       }));
       res.status(200).json(accounts);
     } catch (err) {
-      res.status(500).json(err);
+      res.status(200).json(err);
     }
   },
   addAdmin: async (req, res) => {
@@ -224,7 +224,7 @@ const useController = {
       const savedAdminAccount = await newAdminAccount.save();
       res.status(200).json(savedAdminAccount);
     } catch (err) {
-      res.status(500).json(err);
+      res.status(200).json(err);
     }
   },
   loginAdmin: async (req, res) => {
@@ -264,7 +264,7 @@ const useController = {
         }
       );
     } catch (err) {
-      res.status(500).json(err);
+      res.status(200).json(err);
     }
   },
   updatePasswordWithEmail:async(req, res) => {
@@ -317,7 +317,7 @@ const useController = {
       return res.json({ message: 'Mật khẩu đã được cập nhật và gửi đến email của bạn.' });
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ message: 'Đã có lỗi xảy ra.' });
+      return res.status(200).json({ message: 'Đã có lỗi xảy ra.' });
     }
   },
 };

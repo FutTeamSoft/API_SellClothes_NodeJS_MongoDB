@@ -130,7 +130,7 @@ const invoiceController = {
       }));
       res.json(invoices);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(200).json({ error: error.message });
     }
   },
   //update status invoice
@@ -160,7 +160,7 @@ const invoiceController = {
         AccountID: updatedInvoice.AccountID,
       });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(200).json({ error: error.message });
     }
   },
   //update status invoice
@@ -189,7 +189,7 @@ const invoiceController = {
         AccountID: updatedInvoice.AccountID,
       });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(200).json({ error: error.message });
     }
   },
   //get Invoice History By CustomerId
@@ -216,7 +216,7 @@ const invoiceController = {
 
       res.json(formattedInvoices);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(200).json({ error: error.message });
     }
   },
   //get Invoice History By CustomerId
@@ -238,7 +238,7 @@ const invoiceController = {
 
       res.json(formattedInvoices);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(200).json({ error: error.message });
     }
   },
 };
