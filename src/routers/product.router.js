@@ -776,10 +776,7 @@ router.get("/GetCartByAccID/:idAccount", productController.getCartByIDAccount);
 //Update Quantity In Card
 router.patch("/updateCart/:idCart", productController.updateCart);
 //Delete sản phẩm theo id
-router.delete(
-  "/DeleteCartByID/:idAccount/:idProduct",
-  productController.deleteProductInCart
-);
+router.delete("/DeleteCartByID/:idCart", productController.deleteProductInCart);
 //Delete All Product In Cart
 router.delete(
   "/DeleteAllProductInCart/:idAccount",

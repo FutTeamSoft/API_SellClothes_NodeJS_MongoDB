@@ -119,11 +119,14 @@ const productController = {
           id: allproduct.Product._id,
           NameProduct: allproduct.Product.NameProduct,
           PriceProduct: allproduct.Product.PriceProduct,
-          ImageProduct: {
-            id: allproduct.Product.ImageProduct._id,
-            TenHinh: allproduct.Product.ImageProduct.TenHinh,
-            DuongDanHinh: allproduct.Product.ImageProduct.DuongDanHinh,
-          },
+          ImageProduct: allproduct.Product.ImageProduct
+            ? {
+                id: allproduct.Product.ImageProduct._id,
+                TenHinh: allproduct.Product.ImageProduct.TenHinh,
+                DuongDanHinh: allproduct.Product.ImageProduct.DuongDanHinh,
+              }
+            : null,
+
           Description: allproduct.Product.Description,
           StatusProduct: allproduct.Product.StatusProduct,
           CreateDate: moment(allproduct.Product.CreateDate)
@@ -358,7 +361,6 @@ const productController = {
     }
   },
   //Get All Product By NameSex + Product Type
-  //Get All Product By NameSex + Product Type
   getAllProductBySexAndPType: async (req, res) => {
     try {
       const nameProductType = req.body.NameProductType;
@@ -430,15 +432,24 @@ const productController = {
       const IDSex = req.params.IDSex;
       const IDProductType = req.params.IDProductType;
       const sex = await Sex.findOne({ _id: IDSex });
-      const productType = await ProductType.find({
+
+      // Kiểm tra xem sex có tồn tại không
+      if (!sex) {
+        return res.status(200).json([]);
+      }
+
+      const productType = await ProductType.findOne({
         _id: IDProductType,
         Sex: sex._id,
       }).populate({
         path: "Sex",
       });
+
+      // Kiểm tra xem productType có tồn tại không
       if (!productType) {
-        return res.status(200).json({ message: "Product type not found" });
+        return res.status(200).json([]);
       }
+
       const products = await Product.find({
         ProductType: productType,
       })
@@ -449,14 +460,20 @@ const productController = {
           },
         })
         .populate({ path: "ImageProduct" });
+
+      // Kiểm tra xem products có tồn tại không
+      if (!products || products.length === 0) {
+        return res.status(200).json([]);
+      }
+
       const productByST = products.map((product) => ({
         id: product._id,
         NameProduct: product.NameProduct,
         PriceProduct: product.PriceProduct,
         ImageProduct: {
-          id: product.ImageProduct._id,
-          TenHinh: product.ImageProduct.TenHinh,
-          DuongDanHinh: product.ImageProduct.DuongDanHinh,
+          id: product.ImageProduct?._id ?? null,
+          TenHinh: product.ImageProduct?.TenHinh ?? null,
+          DuongDanHinh: product.ImageProduct?.DuongDanHinh ?? null,
         },
         Description: product.Description,
         StatusProduct: product.StatusProduct,
@@ -467,28 +484,21 @@ const productController = {
           .tz("Asia/Ho_Chi_Minh")
           .format("YYYY-MM-DD HH:mm:ss"),
         ProductType: {
-          id: product.ProductType !== null ? product.ProductType._id : null,
-          NameProductType:
-            product.ProductType !== null
-              ? product.ProductType.NameProductType
-              : null,
+          id: product.ProductType?.id ?? null,
+          NameProductType: product.ProductType?.NameProductType ?? null,
           Sex: {
-            id:
-              product.ProductType && product.ProductType.Sex
-                ? product.ProductType.Sex[0]._id
-                : null,
-            NameSex:
-              product.ProductType && product.ProductType.Sex
-                ? product.ProductType.Sex[0].NameSex
-                : null,
+            id: product.ProductType?.Sex?.[0]?.id ?? null,
+            NameSex: product.ProductType?.Sex?.[0]?.NameSex ?? null,
           },
         },
       }));
+
       res.status(200).json(productByST);
     } catch (err) {
       res.status(500).json(err.message);
     }
   },
+
   //get product latest flow quality
   getProductsByquality: async (req, res) => {
     try {
@@ -503,11 +513,7 @@ const productController = {
           },
         })
         .populate({ path: "ImageProduct" });
-        
-        if (products.length < quality) {
-          return res.status(400).json({ message: "Không đủ sản phẩm" });
-        }
-    
+
       const productQTT = products.map((product) => ({
         id: product._id,
         NameProduct: product.NameProduct,
@@ -548,6 +554,7 @@ const productController = {
       res.status(500).json({ message: err.message });
     }
   },
+  //Get Product By Name
   getProductsByName: async (req, res) => {
     try {
       const name = parseInt(req.params.name); // lấy giá trị limit từ req.params
@@ -654,6 +661,11 @@ const productController = {
           ],
         })
         .populate({ path: "Account" });
+
+      if (!cartt) {
+        return res.status(200).json({ message: "Cart not found." });
+      }
+
       const carts = cartt.map((cart) => ({
         id: cart._id,
         Product: {
@@ -661,9 +673,15 @@ const productController = {
           NameProduct: cart.Product.NameProduct,
           PriceProduct: cart.Product.PriceProduct,
           ImageProduct: {
-            id: cart.Product.ImageProduct._id,
-            TenHinh: cart.Product.ImageProduct.TenHinh,
-            DuongDanHinh: cart.Product.ImageProduct.DuongDanHinh,
+            id: cart.Product.ImageProduct
+              ? cart.Product.ImageProduct._id
+              : null,
+            TenHinh: cart.Product.ImageProduct
+              ? cart.Product.ImageProduct.TenHinh
+              : null,
+            DuongDanHinh: cart.Product.ImageProduct
+              ? cart.Product.ImageProduct.DuongDanHinh
+              : null,
           },
           Description: cart.Product.Description,
           StatusProduct: cart.Product.StatusProduct,
@@ -691,6 +709,7 @@ const productController = {
         CartProductSize: cart.CartProductSize,
         CartProductQuantity: cart.CartProductQuantity,
       }));
+
       res.status(200).json(carts);
     } catch (err) {
       res.status(500).json(err.message);
@@ -734,9 +753,15 @@ const productController = {
           NameProduct: allproduct.Product.NameProduct,
           PriceProduct: allproduct.Product.PriceProduct,
           ImageProduct: {
-            id: allproduct.Product.ImageProduct._id,
-            TenHinh: allproduct.Product.ImageProduct.TenHinh,
-            DuongDanHinh: allproduct.Product.ImageProduct.DuongDanHinh,
+            id: allproduct.Product.ImageProduct
+              ? allproduct.Product.ImageProduct._id
+              : null,
+            TenHinh: allproduct.Product.ImageProduct
+              ? allproduct.Product.ImageProduct.TenHinh
+              : null,
+            DuongDanHinh: allproduct.Product.ImageProduct
+              ? allproduct.Product.ImageProduct.DuongDanHinh
+              : null,
           },
           Description: allproduct.Product.Description,
           StatusProduct: allproduct.Product.StatusProduct,
@@ -779,17 +804,15 @@ const productController = {
   //Update Quantity in Cart
   updateCart: async (req, res) => {
     try {
-      const { idCart, Product, CartProductSize, CartProductQuantity } =
-        req.body;
+      const idCart = req.params.idCart;
+      const { CartProductQuantity } = req.body;
 
       // Tìm kiếm giỏ hàng dựa trên idCart và kiểm tra sản phẩm có tồn tại và trùng Size
       const cart = await Cart.findOne({
         _id: idCart,
-        Product,
-        CartProductSize,
       });
       if (!cart) {
-        return res.status(404).json({ message: "Không tìm thấy giỏ hàng" });
+        return res.status(200).json({ message: "Không tìm thấy giỏ hàng" });
       }
 
       // Cập nhật số lượng sản phẩm trong giỏ hàng
@@ -805,20 +828,19 @@ const productController = {
   //Delete Product In Cart
   deleteProductInCart: async (req, res) => {
     try {
-      const idProduct = req.params.idProduct;
-      const idAccount = req.params.idAccount;
-      // Tìm kiếm bản ghi Cart dựa trên IdAccount
-      const cart = await Cart.findOne({ Account: idAccount });
+      const idCart = req.params.idCart;
+      // Tìm kiếm bản ghi Cart dựa trên _id (ObjectId) của cart
+      const cart = await Cart.findById(idCart);
       if (!cart) {
-        return res.status(404).json({ message: "Không tìm thấy Cart" });
+        return res.status(200).json({ message: "No found cart" });
       }
-      const carts = await Cart.findOne({ Product: idProduct });
-      await carts.remove();
-      res.status(200).json({ msg: "Product removed from cart" });
+      await cart.remove();
+      res.status(200).json({ message: "Product removed from cart" });
     } catch (err) {
       res.status(500).json({ message: err.message });
     }
   },
+
   //Delete All Product In Cart
   deleteAllProductAllCart: async (req, res) => {
     try {
