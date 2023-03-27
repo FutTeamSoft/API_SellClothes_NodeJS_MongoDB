@@ -182,9 +182,10 @@ const InvoiceSchema = new mongoose.Schema({
     required: true,
     default: 0,
   },
-  PaymentsInvoice: {
-    type: String,
+  Shipper: {
+    type: Number,
     required: true,
+    default: 0,
   },
   StatusInvoice: {
     type: Number,

@@ -16,7 +16,7 @@ const invoiceController = {
   createInvoice: async (req, res) => {
     try {
       const id = req.params.id;
-      const { PaymentsInvoice, NoteInvoice } = req.body;
+      const { NoteInvoice, Shipper } = req.body;
       const account = await Account.findById(id);
       const cartItems = await Cart.find({ Account: id })
         .populate({
@@ -29,11 +29,13 @@ const invoiceController = {
         .populate({ path: "Account" });
       // kiểm tra xem giỏ hàng có sản phẩm hay không
       if (cartItems.length === 0) {
-        return res.status(200).json({ message: "Không có sản phẩm trong giỏ hàng" });
+        return res
+          .status(200)
+          .json({ message: "Không có sản phẩm trong giỏ hàng" });
       }
       let total = 0;
       for (let i = 0; i < cartItems.length; i++) {
-        const { Product, CartProductQuantity,CartProductSize } = cartItems[i];
+        const { Product, CartProductQuantity, CartProductSize } = cartItems[i];
         const totalPrice = Product.PriceProduct * CartProductQuantity;
         total += totalPrice;
 
@@ -49,24 +51,25 @@ const invoiceController = {
         });
 
         if (!productDetail || productDetail.SoLuongTon < CartProductQuantity) {
-          return res.status(200).json({ message: "Sản phẩm không đủ số lượng tồn" });
+          return res
+            .status(200)
+            .json({ message: "Sản phẩm không đủ số lượng tồn" });
         }
       }
-
+      let a = parseInt(Shipper);
       // thêm mới hóa đơn
       const invoice = new Invoice({
         InvoiceNameReceiver: account.FullName,
         InvoiceAddressReceiver: account.AddressUser,
         InvoicePhoneReceiver: account.PhoneNumber,
         InvoiceDate: new Date(),
-        TotalInvoice: total,
-        PaymentsInvoice,
+        TotalInvoice: total + a,
+        Shipper,
         StatusInvoice: false,
         Paid: false,
         NoteInvoice,
-        AccountID: AccountID,
+        AccountID: id,
       });
-
       // lưu hóa đơn vào database
       await invoice.save();
 
@@ -105,7 +108,7 @@ const invoiceController = {
       }
 
       // Xóa các chi tiết trong giỏ hàng đã được thêm vào hóa đơn
-      await Cart.deleteMany({ Account: AccountID });
+      await Cart.deleteMany({ Account: id });
       res.status(200).json({ message: "Đặt hàng thành công!" });
     } catch (error) {
       res.status(200).json({ message: error.message });
@@ -130,7 +133,7 @@ const invoiceController = {
       }));
       res.json(invoices);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(200).json({ error: error.message });
     }
   },
   //update status invoice
@@ -160,7 +163,7 @@ const invoiceController = {
         AccountID: updatedInvoice.AccountID,
       });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(200).json({ error: error.message });
     }
   },
   //update status invoice
@@ -189,7 +192,7 @@ const invoiceController = {
         AccountID: updatedInvoice.AccountID,
       });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(200).json({ error: error.message });
     }
   },
   //get Invoice History By CustomerId
@@ -216,7 +219,7 @@ const invoiceController = {
 
       res.json(formattedInvoices);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(200).json({ error: error.message });
     }
   },
   //get Invoice History By CustomerId
@@ -238,7 +241,7 @@ const invoiceController = {
 
       res.json(formattedInvoices);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(200).json({ error: error.message });
     }
   },
 };

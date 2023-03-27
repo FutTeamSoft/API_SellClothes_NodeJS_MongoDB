@@ -513,7 +513,6 @@ const productController = {
           },
         })
         .populate({ path: "ImageProduct" });
-
       const productQTT = products.map((product) => ({
         id: product._id,
         NameProduct: product.NameProduct,
