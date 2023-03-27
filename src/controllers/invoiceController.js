@@ -109,7 +109,7 @@ const invoiceController = {
 
       // Xóa các chi tiết trong giỏ hàng đã được thêm vào hóa đơn
       await Cart.deleteMany({ Account: id });
-      res.status(200).json({ message: "Đặt hàng thành công!" });
+      res.status(200).json({ message: "Đặt hàng thành công!",idInvoice:invoice._id });
     } catch (error) {
       res.status(200).json({ message: error.message });
     }
