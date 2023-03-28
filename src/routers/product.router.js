@@ -685,25 +685,25 @@ const router = require("express").Router();
  *         description: Bad Request
  *       500:
  *         description: Internal Server Error
- * /products/getAllProductBySexAndPType:
+ * /products/GetAllProByIDSexAndType/{IDSex}/{IDProductType}:
  *   get:
- *     summary: Get all products by sex and product type
- *     tags: [Products]
+ *     summary: Get all products by IDSex and IDProductType
+ *     description: Get a list of all products that match the given IDSex and IDProductType.
+ *     tags:
+ *       - Products
  *     parameters:
- *       - in: query
- *         name: NameProductType
+ *       - in: path
+ *         name: IDSex
+ *         description: ID of the sex
+ *         required: true
  *         schema:
  *           type: string
+ *       - in: path
+ *         name: IDProductType
+ *         description: ID of the product type
  *         required: true
- *         description: The product type of the products to retrieve
- *         example: "Top Male"
- *       - in: query
- *         name: NameSex
  *         schema:
  *           type: string
- *         required: true
- *         description: The sex of the products to retrieve
- *         example: "Nam"
  *     responses:
  *       200:
  *         description: Success
@@ -711,7 +711,282 @@ const router = require("express").Router();
  *         description: Bad Request
  *       500:
  *         description: Internal Server Error
-
+ * /products/getProductsByName/{name}:
+ *   get:
+ *     summary: Get new products by name
+ *     description: Get a list of new products that match the given name.
+ *     tags:
+ *       - Products
+ *     parameters:
+ *       - in: path
+ *         name: name
+ *         description: Name of the product
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad Request
+ *       500:
+ *         description: Internal Server Error
+ * /products/addProductDetails:
+ *   post:
+ *     summary: Add product details
+ *     description: Add details for a new product.
+ *     tags:
+ *       - Products
+ *     requestBody:
+ *       description: Product details to add
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               Product:
+ *                 type: string
+ *               SizeProduct:
+ *                 type: string
+ *               SoLuongTon:
+ *                 type: number
+ *             example:
+ *               Product: 642155f4d4e01b8867909b23
+ *               SizeProduct: 6401dd293ea3e07b76538e6e
+ *               SoLuongTon: 100
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad Request
+ *       500:
+ *         description: Internal Server Error
+ * /products/GetDetailProductByID/{idProduct}:
+ *   get:
+ *     summary: Get product details by ID
+ *     description: Get details of a product by its ID.
+ *     tags:
+ *       - Products
+ *     parameters:
+ *       - in: path
+ *         name: idProduct
+ *         description: ID of the product to retrieve details for
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 Product:
+ *                   type: string
+ *                 SizeProduct:
+ *                   type: string
+ *                 SoLuongTon:
+ *                   type: number
+ *               example:
+ *                 id: 64215b060593c4c792026fc5
+ *                 Product: 64215b060593ssc792026fc5
+ *                 SizeProduct: S
+ *                 SoLuongTon: 9999
+ *       400:
+ *         description: Bad Request
+ *       500:
+ *         description: Internal Server Error
+ * /products/addCart:
+ *   post:
+ *     summary: Add a product to the cart
+ *     description: Add a product to the cart with the given product ID and quantity.
+ *     tags:
+ *       - Cart
+ *     requestBody:
+ *       description: The ID of the product and quantity to add to the cart.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               Product:
+ *                 type: string
+ *               Account:
+ *                 type: string
+ *               CartProductSize:
+ *                 type: string
+ *               CartProductQuantity:
+ *                 type: int
+ *             example:
+ *               Product: 640c486af339b866d479ea4d
+ *               Account: 641aa95aed6539dd980a6765
+ *               CartProductSize: XL
+ *               CartProductQuantity: 2
+ *     responses:
+ *       201:
+ *         description: The product was successfully added to the cart
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 cart:
+ *                   $ref: '#/components/schemas/Cart'
+ *               example:
+ *                 message: Product added to cart successfully
+ *       400:
+ *         description: Invalid request body or product ID
+ *       500:
+ *         description: An error occurred while adding the product to the cart
+ * /products/GetCartByAccID/{idAccount}:
+ *   get:
+ *     summary: Get the cart for the given account ID
+ *     description: Retrieve the cart for the account with the given ID.
+ *     tags:
+ *       - Cart
+ *     parameters:
+ *       - in: path
+ *         name: idAccount
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the account to retrieve the cart for.
+ *         example: 12345
+ *     responses:
+ *       200:
+ *         description: The cart for the account was successfully retrieved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Cart'
+ *       400:
+ *         description: Invalid account ID
+ *       404:
+ *         description: The cart for the account was not found
+ *       500:
+ *         description: An error occurred while retrieving the cart
+ * /products/updateCart/{idCart}:
+ *   patch:
+ *     summary: Update the quantity of a product in the cart
+ *     description: Update the quantity of the product with the given ID in the cart with the given cart ID.
+ *     tags:
+ *       - Cart
+ *     parameters:
+ *       - in: path
+ *         name: idCart
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the cart to update.
+ *         example: 6420707dcf84e4e404af07f4
+ *       - in: body
+ *         name: cartItem
+ *         description: The cart item to update.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             CartProductQuantity:
+ *               type: integer
+ *           required:
+ *             - CartProductQuantity
+ *           example:
+ *             CartProductQuantity: 8
+ *     responses:
+ *       200:
+ *         description: The cart item was successfully updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Cart'
+ *       400:
+ *         description: Invalid cart or cart item data
+ *       404:
+ *         description: The cart or cart item was not found
+ *       500:
+ *         description: An error occurred while updating the cart item
+ * /products/DeleteCartByID/{idCart}:
+ *   delete:
+ *     summary: Delete a product from the cart by ID
+ *     tags: [Cart]
+ *     parameters:
+ *       - in: path
+ *         name: idCart
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the product in the cart to delete
+ *         example: 6421498a9deae1f951dcb220
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad Request
+ *       500:
+ *         description: Internal Server Error
+ * /products/DeleteAllProductInCart/{idAccount}:
+ *   delete:
+ *     summary: Delete all products in the cart by account ID
+ *     tags: [Cart]
+ *     parameters:
+ *       - in: path
+ *         name: idAccount
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the account whose cart will be cleared
+ *         example: 1
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad Request
+ *       500:
+ *         description: Internal Server Error
+ * /products/getProductByIDProduct/{idProduct}:
+ *   get:
+ *     summary: Get product by ID product
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: idProduct
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the product to retrieve
+ *         example: 6421498a9deae1f951dcb220
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad Request
+ *       500:
+ *         description: Internal Server Error
+ * /products/getSizeByProduct/{idProduct}:
+ *   get:
+ *     summary: Get all sizes of a product by product ID
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: idProduct
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the product to retrieve sizes for
+ *         example: 6421498a9deae1f951dcb220
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad Request
+ *       500:
+ *         description: Internal Server Error
  */
 //ADD SIZE PRODUCT
 router.post("/AddSizeProduct", productController.addSizeProduct); //Swagger
@@ -757,35 +1032,35 @@ router.get(
 );
 //GET ALL PRODUCT BY IDSEX AND IDPRODUCTTYPE
 router.get(
-  "/GetAllProByIDSexAndType/:IDSex/:IDProductType",
+  "/GetAllProByIDSexAndType/:IDSex/:IDProductType", //Swagger
   productController.getAllProductByIDSexAndIDType
 );
 //get new prodcut by quality
-router.get("/getProductsByName/:name", productController.getProductsByName);
+router.get("/getProductsByName/:name", productController.getProductsByName); //Swagger
 //Add product Details
-router.post("/addProductDetails", productController.addProductDetails);
+router.post("/addProductDetails", productController.addProductDetails); //Swagger
 //Get Detail Product By ID
 router.get(
   "/GetDetailProductByID/:idProduct",
-  productController.getProductDetailByIDProduct
+  productController.getProductDetailByIDProduct //Swagger
 );
 //Add Cart
-router.post("/addCart", productController.addProductIntoCart);
+router.post("/addCart", productController.addProductIntoCart); //Swagger
 //Get Cart By Account ID
-router.get("/GetCartByAccID/:idAccount", productController.getCartByIDAccount);
+router.get("/GetCartByAccID/:idAccount", productController.getCartByIDAccount); //Swagger
 //Update Quantity In Card
-router.patch("/updateCart/:idCart", productController.updateCart);
+router.patch("/updateCart/:idCart", productController.updateCart); //Swagger
 //Delete sản phẩm theo id
-router.delete("/DeleteCartByID/:idCart", productController.deleteProductInCart);
+router.delete("/DeleteCartByID/:idCart", productController.deleteProductInCart); //Swagger
 //Delete All Product In Cart
 router.delete(
   "/DeleteAllProductInCart/:idAccount",
-  productController.deleteAllProductAllCart
+  productController.deleteAllProductAllCart //Swagger
 );
 //Get Product By ID Product
 router.get(
   "/getProductByIDProduct/:idProduct",
-  productController.getProductByIDProduct
+  productController.getProductByIDProduct //Swagger
 );
 //Get All Size Product By Product ID
 router.get("/getSizeByProduct/:idProduct", productController.getSizeByProduct);
