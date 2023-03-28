@@ -232,8 +232,10 @@ const invoiceController = {
           AccountID: invoice.AccountID,
         };
       });
-
-      res.json(formattedInvoices);
+      const sortedInvoices = formattedInvoices.sort((a, b) => {
+        return moment(b.InvoiceDate, "DD/MM/YYYY").diff(moment(a.InvoiceDate, "DD/MM/YYYY"));
+      });
+      res.json(sortedInvoices);
     } catch (error) {
       res.status(200).json({ error: error.message });
     }
