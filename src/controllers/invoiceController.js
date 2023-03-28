@@ -104,7 +104,7 @@ const invoiceController = {
         });
 
         // Lưu chi tiết hóa đơn vào database
-         await invoiceDetail.save();
+        await invoiceDetail.save();
       }
 
       // Xóa các chi tiết trong giỏ hàng đã được thêm vào hóa đơn
@@ -113,6 +113,7 @@ const invoiceController = {
         error: false,
         message: "Đặt hàng thành công!",
         invoice: {
+          id: invoice._id,
           InvoiceNameReceiver: b.FullNbme,
           InvoicebddressReceiver: b.AddressUser,
           InvoicePhoneReceiver: b.PhoneNumber,
@@ -241,75 +242,53 @@ const invoiceController = {
   getInvoiceDetailByInvoiceId: async (req, res) => {
     try {
       const InvoiceID = req.params.InvoiceID;
-      const invoices = await InvoiceDetails.find({
-        InvoiceID: InvoiceID,
-      }).populate("_id");
-
-      const formattedInvoices = invoices.map((invoice) => {
-        return {
+      const invoices = await InvoiceDetails.find({InvoiceID: InvoiceID,}).populate("_id");
+      const formattedInvoices = [];
+      for (const invoice of invoices) {
+        const size = await SizeProduct.findOne({_id: invoice.SizeProductID,});
+        const fmsize = {id: size._id,size: size.TenSize,};
+        const allProducts = await Product.findOne({_id: invoice.ProductID,}).populate({path: "ProductType",populate: { path: "Sex" },}).populate({ path: "ImageProduct" });
+        const allProduct = {
+          id: allProducts._id,
+          NameProduct: allProducts.NameProduct,
+          PriceProduct: allProducts.PriceProduct,
+          ImageProduct: {
+            id: allProducts.ImageProduct._id,
+            TenHinh: allProducts.ImageProduct.TenHinh,
+            DuongDanHinh: allProducts.ImageProduct.DuongDanHinh,
+          },
+          Description: allProducts.Description,
+          StatusProduct: allProducts.StatusProduct,
+          CreateDate: moment(allProducts.CreateDate)
+            .tz("Asia/Ho_Chi_Minh")
+            .format("YYYY-MM-DD HH:mm:ss"),
+          UpdateDate: moment(allProducts.UpdateDate)
+            .tz("Asia/Ho_Chi_Minh")
+            .format("YYYY-MM-DD HH:mm:ss"),
+          ProductType: {
+            id: allProducts.ProductType._id,
+            NameProductType: allProducts.ProductType.NameProductType,
+            Sex: {
+              id: allProducts.ProductType.Sex[0]._id,
+              NameSex: allProducts.ProductType.Sex[0].NameSex,
+            },
+          },
+        };
+        formattedInvoices.push({
           id: invoice._id,
-          SizeProductID: invoice.SizeProductID,
-          ProductID: invoice.ProductID,
-          NameProduct: invoice.ProductID, // Lấy tên sản phẩm từ đối tượng Product được kết hợp
+          TenSize: fmsize.size,
           InvoiceID: invoice.InvoiceID,
           Quantity: invoice.Quantity,
           UnitPrice: invoice.UnitPrice,
-        };
-      });
-      const size = await SizeProduct.findOne({
-        _id: formattedInvoices[0].SizeProductID,
-      });
-      const fmsize = {
-        id: size._id,
-        size: size.TenSize,
-      };
-      const allProducts = await Product.findOne({
-        _id: formattedInvoices[0].ProductID,
-      })
-        .populate({
-          path: "ProductType",
-          populate: { path: "Sex" },
-        })
-        .populate({ path: "ImageProduct" });
-      const allProduct = {
-        id: allProducts._id,
-        NameProduct: allProducts.NameProduct,
-        PriceProduct: allProducts.PriceProduct,
-        ImageProduct: {
-          id: allProducts.ImageProduct._id,
-          TenHinh: allProducts.ImageProduct.TenHinh,
-          DuongDanHinh: allProducts.ImageProduct.DuongDanHinh,
-        },
-        Description: allProducts.Description,
-        StatusProduct: allProducts.StatusProduct,
-        CreateDate: moment(allProducts.CreateDate)
-          .tz("Asia/Ho_Chi_Minh")
-          .format("YYYY-MM-DD HH:mm:ss"),
-        UpdateDate: moment(allProducts.UpdateDate)
-          .tz("Asia/Ho_Chi_Minh")
-          .format("YYYY-MM-DD HH:mm:ss"),
-        ProductType: {
-          id: allProducts.ProductType._id,
-          NameProductType: allProducts.ProductType.NameProductType,
-          Sex: {
-            id: allProducts.ProductType.Sex[0]._id,
-            NameSex: allProducts.ProductType.Sex[0].NameSex,
-          },
-        },
-      };
-
-      res.json({
-        id: formattedInvoices[0].id,
-        TenSize: fmsize.size,
-        InvoiceID: formattedInvoices[0].InvoiceID,
-        Quantity: formattedInvoices[0].Quantity,
-        UnitPrice: formattedInvoices[0].UnitPrice,
-        Product: allProduct,
-      });
+          Product: allProduct,
+        });
+      }
+      res.json(formattedInvoices);
     } catch (error) {
       res.status(200).json({ error: error.message });
     }
   },
+  
 };
 
 module.exports = invoiceController;
