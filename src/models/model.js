@@ -237,6 +237,7 @@ const InvoiceDetailsSchema = new mongoose.Schema({
     default: 0,
   },
 });
+//Cart
 const CartSchema = new mongoose.Schema({
   Product: {
     type: mongoose.Schema.Types.ObjectId,

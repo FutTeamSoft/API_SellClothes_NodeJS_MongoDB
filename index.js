@@ -4,6 +4,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const swaggerJsdoc = require("swagger-jsdoc"),
+  swaggerUi = require("swagger-ui-express");
 const moment = require("moment");
 const cors = require("cors");
 const mongoString = process.env.DATABASE_URL;
@@ -22,6 +24,7 @@ app.use(
     extended: true,
   })
 );
+
 //================================//
 //Cors
 app.use(
@@ -55,7 +58,45 @@ database.once("connected", () => {
 database.on("error", (error) => {
   console.log(error);
 });
+//Swagger
 
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "LogRocket Express API with Swagger",
+      version: "0.1.0",
+      description:
+        "This is a simple CRUD API application made with Express and documented with Swagger",
+      license: {
+        name: "MIT",
+        url: "https://spdx.org/licenses/MIT.html",
+      },
+      contact: {
+        name: "LogRocket",
+        url: "https://logrocket.com",
+        email: "info@email.com",
+      },
+    },
+    servers: [
+      {
+        url: "https://ptud-api.fteamlp.top",
+      },
+    ],
+  },
+  apis: ["./src/routers/*.js"],
+};
+
+const specs = swaggerJsdoc(options);
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(specs, {
+    explorer: true,
+    customCssUrl:
+      "https://cdn.jsdelivr.net/npm/swagger-ui-themes@3.0.0/themes/3.x/theme-newspaper.css",
+  })
+);
 //==================================//
 const port = process.env.PORT || process.env.APP_PORT;
 app.listen(port, () => {
