@@ -1,0 +1,71 @@
+.img-wrap {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.img-inner {
+  background-image: url(../../assets/images/homeImage.jpg);
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center center;
+}
+
+.caption {
+  width: 100%;
+  max-width: 30%;
+  position: absolute;
+  top: 25%;
+  left: 12.8rem;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.caption h1 {
+  font-size: 4.2rem;
+  color: var(--color-on-primary-container);
+  font-weight: bold;
+  line-height: 5.25rem;
+  animation: slideInRight ease 0.4s;
+}
+
+.caption p {
+  color: var(--color-on-primary-container);
+  font-weight: 300;
+  line-height: 2.4rem;
+  animation: slideInRight ease 0.5s;
+}
+
+.button {
+  width: fit-content;
+}
+
+.new-product-wrap {
+  padding: 3.2rem 0 10rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.new-product-wrap-tile {
+  font-size: 4.2rem;
+  font-weight: bold;
+  line-height: 5.25rem;
+  color: var(--color-on-background);
+  margin-bottom: 1.6rem;
+}
+
+.new-product-wrap-content {
+  width: 100%;
+}
