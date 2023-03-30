@@ -1,10 +1,7 @@
+import config from "~/config";
 import Home from "~/pages/Home";
-import Following from "~/pages/Following";
 
-const publicRoutes = [
-  { path: "/", component: Home },
-  { path: "/following", component: Following, layout: null },
-];
+const publicRoutes = [{ path: config.routes.home, component: Home }];
 
 //Đăng nhập mới vào được không thì sẽ chuyển tới trang đăng nhập
 const privateRoutes = [];
