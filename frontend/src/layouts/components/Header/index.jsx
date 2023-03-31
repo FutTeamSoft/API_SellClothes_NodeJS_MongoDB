@@ -1,63 +1,66 @@
 import classNames from "classnames/bind";
 import { useDispatch, useSelector } from "react-redux";
-import { MdSearch, MdOutlineShoppingCart } from "react-icons/md";
+import { Col, Row } from "react-bootstrap";
+import { MdOutlineShoppingCart } from "react-icons/md";
 import { RxAvatar } from "react-icons/rx";
+
 import styles from "./Header.module.scss";
 import config from "~/config";
 import Button from "~/components/Button";
-import { stateNavSelector } from "~/redux/selectors";
-import headerSlice from "./headerSlice";
-import { Col, Row } from "react-bootstrap";
+import { stateNavSelector, currentUserSelector } from "~/redux/selectors";
+import { useState } from "react";
+import authSlice from "~/pages/Authentication/authSlice";
+import { Link, useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
 function Header() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const stateNav = useSelector(stateNavSelector);
+  const currentUser = useSelector(currentUserSelector);
 
-  const handleChangeNav = (data) => {
-    dispatch(headerSlice.actions.navigationChange(data));
+  const [isOpenDropdown, setIsOpenDropdown] = useState(false);
+  const toggleDropdown = () => setIsOpenDropdown(!isOpenDropdown);
+
+  const handleLogout = () => {
+    toggleDropdown();
+    dispatch(authSlice.actions.logout());
+    navigate(config.routes.home);
   };
 
   return (
     <header className={cx("wrapper")}>
       <div className={cx("inner")}>
-        <label className={cx("logo")}>{config.texts.logo}</label>
+        <Link to={config.routes.home} className={cx("logo")}>
+          {config.texts.logo}
+        </Link>
         <div className={cx("action")}>
           <Row className={cx("action-nav")}>
             <Col>
               <Button
-                keepActive={stateNav === config.texts.home}
+                selected={stateNav === config.routes.home}
                 navigation
                 to={config.routes.home}
-                onClick={() => {
-                  handleChangeNav(config.texts.home);
-                }}
               >
                 {config.texts.home}
               </Button>
             </Col>
             <Col>
               <Button
-                keepActive={stateNav === config.texts.product}
+                selected={stateNav === config.routes.products}
                 navigation
-                to={config.routes.product}
-                onClick={() => {
-                  handleChangeNav(config.texts.product);
-                }}
+                to={config.routes.products}
               >
-                {config.texts.product}
+                {config.texts.products}
               </Button>
             </Col>
             <Col>
               <Button
-                keepActive={stateNav === config.texts.about}
+                selected={stateNav === config.routes.about}
                 navigation
                 to={config.routes.about}
-                onClick={() => {
-                  handleChangeNav(config.texts.about);
-                }}
               >
                 {config.texts.about}
               </Button>
@@ -65,32 +68,55 @@ function Header() {
           </Row>
           <Row className={cx("action-icon")}>
             <Col>
-              <Button className={cx("icon")}>
-                <MdSearch />
-              </Button>
-            </Col>
-            <Col>
-              <Button className={cx("icon")}>
+              <Button to={config.routes.cart} className={cx("icon")}>
                 <MdOutlineShoppingCart />
               </Button>
             </Col>
             <Col>
-              <Button to={config.routes.login} className={cx("icon")}>
-                <RxAvatar />
-              </Button>
+              {currentUser ? (
+                <div>
+                  <Button text onClick={toggleDropdown}>
+                    {currentUser.FullName}
+                  </Button>
+                  {isOpenDropdown && (
+                    <ul className={`${cx("dropdown-list")} shadow`}>
+                      <li>
+                        <Button
+                          text
+                          to={
+                            config.routes.accountInformation +
+                            currentUser.FullName
+                          }
+                          onClick={toggleDropdown}
+                        >
+                          {config.texts.accountInformation}
+                        </Button>
+                      </li>
+                      <li>
+                        <Button
+                          text
+                          to={config.routes.invoices}
+                          onClick={toggleDropdown}
+                        >
+                          {config.texts.orderHistory}
+                        </Button>
+                      </li>
+                      <hr />
+                      <li>
+                        <Button className="mx-auto" text onClick={handleLogout}>
+                          {config.texts.logout}
+                        </Button>
+                      </li>
+                    </ul>
+                  )}
+                </div>
+              ) : (
+                <Button to={config.routes.login} className={cx("icon")}>
+                  <RxAvatar />
+                </Button>
+              )}
             </Col>
           </Row>
-          <div className={cx("action-icon")}>
-            <Button className={cx("icon")}>
-              <MdSearch />
-            </Button>
-            <Button className={cx("icon")}>
-              <MdOutlineShoppingCart />
-            </Button>
-            <Button to={config.routes.about} className={cx("icon")}>
-              <RxAvatar />
-            </Button>
-          </div>
         </div>
       </div>
     </header>

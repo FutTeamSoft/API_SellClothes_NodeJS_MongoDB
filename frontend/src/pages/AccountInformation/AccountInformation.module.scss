@@ -1,0 +1,55 @@
+/*Màn hình thông tin tài khoản*/
+.background {
+  padding-top: 15vh;
+}
+
+.wrapper {
+  width: 100%;
+  background-color: var(--color-background);
+  border-radius: 16px;
+  max-width: 1024px;
+  margin-right: auto;
+  margin-left: auto;
+  padding: 40px 32px;
+  color: var(--color-on-background);
+
+  h2 {
+    font-weight: bold;
+  }
+}
+
+.title-content-wrap {
+  font-weight: bold;
+  padding: 8px 0;
+}
+
+.group-infor {
+  + .group-infor {
+    margin-top: 16px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1.4rem;
+  }
+
+  input {
+    width: 100%;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+    padding: 2px 8px;
+    background-color: transparent;
+
+    &:focus {
+      border-color: var(--color-surface-variant);
+    }
+  }
+}
+
+.group-button {
+  width: 100%;
+  padding-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/*Hết Màn hình thông tin tài khoản*/
