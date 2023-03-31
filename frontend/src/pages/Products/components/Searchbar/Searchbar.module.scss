@@ -1,0 +1,15 @@
+.wrapper {
+  display: flex;
+  background-color: var(--color-background);
+  border-radius: 16px;
+  padding: 0 1.6rem;
+  height: 4rem;
+  border: solid 2px var(--color-surface-variant-outline);
+  margin-bottom: 16px;
+
+  input {
+    color: var(--color-on-background);
+    width: 100%;
+    background-color: transparent;
+  }
+}
