@@ -34,7 +34,7 @@ function Home() {
         <div className={cx("caption")}>
           <h1>{config.texts.welcome}</h1>
           <p>{config.texts.describeHome}</p>
-          <Button className={cx("button")} primary to={config.routes.products}>
+          <Button className={cx("button")} primary to={config.routes.product}>
             {config.texts.shopNow}
           </Button>
         </div>
