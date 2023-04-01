@@ -5,6 +5,7 @@ import products from "~/pages/Products";
 import Login from "~/pages/Authentication/Login";
 import Register from "~/pages/Authentication/Register";
 import AccountInformation from "~/pages/AccountInformation";
+import ProductDetail from "~/pages/ProductDetail";
 
 const publicRoutes = [
   { path: config.routes.home, component: Home },
@@ -14,6 +15,10 @@ const publicRoutes = [
   {
     path: config.routes.accountInformation + ":nameUser",
     component: AccountInformation,
+  },
+  {
+    path: config.routes.products + "/:idProduct",
+    component: ProductDetail,
   },
 ];
 
