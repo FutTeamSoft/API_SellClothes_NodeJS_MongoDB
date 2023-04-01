@@ -1,0 +1,48 @@
+.background {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  min-height: 95vh;
+  padding-bottom: 10vh;
+}
+
+.inner {
+  position: relative;
+  max-width: 85rem;
+  width: 100%;
+  background-color: var(--color-background);
+  padding: 40px 32px;
+  border-radius: 16px;
+}
+
+.wrap-notice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  p {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+}
+
+.wrap-button {
+  display: flex;
+  justify-content: space-between;
+  padding: 24px;
+}
+
+.warning-text {
+  font-weight: bold;
+  color: red;
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
+.success-text {
+  font-weight: bold;
+  color: green;
+  margin-top: 10px;
+  margin-bottom: 0;
+}

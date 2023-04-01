@@ -1,0 +1,48 @@
+.inner {
+  margin: 0 auto 20px;
+  max-width: var(--width);
+}
+
+.heading {
+  color: var(--color-on-background);
+  font-size: 4.2rem;
+  font-weight: bold;
+  line-height: 5.2rem;
+  margin: 1.6rem 0;
+}
+
+.form-group {
+  p {
+    font-weight: bold;
+    margin: 0 8px;
+  }
+  input {
+    width: 100%;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 8px;
+    &:focus {
+      border-color: var(--color-surface-variant);
+    }
+  }
+
+  + .form-group {
+    margin-top: 16px;
+  }
+}
+
+.wrap-order {
+  border-radius: 1.6rem;
+  border-style: solid;
+  border-width: 2px;
+  border-color: var(--color-surface-variant-outline);
+  width: 100%;
+  padding: 1.6rem;
+  background-color: var(--color-background);
+  animation: slideInRight ease 0.6s;
+  margin-bottom: 16px;
+}
+
+.btn-order {
+  width: 100%;
+}

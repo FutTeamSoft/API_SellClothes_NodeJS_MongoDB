@@ -8,6 +8,8 @@ import AccountInformation from "~/pages/AccountInformation";
 import ProductDetail from "~/pages/ProductDetail";
 import Cart from "~/pages/Cart";
 import About from "~/pages/About";
+import Checkout from "~/pages/Checkout";
+import OrderNotice from "~/pages/OrderNotice";
 
 const publicRoutes = [
   { path: config.routes.home, component: Home },
@@ -24,6 +26,8 @@ const publicRoutes = [
   },
   { path: config.routes.cart, component: Cart },
   { path: config.routes.about, component: About },
+  { path: config.routes.checkout, component: Checkout },
+  { path: config.routes.orderNotice, component: OrderNotice },
 ];
 
 //Đăng nhập mới vào được không thì sẽ chuyển tới trang đăng nhập
