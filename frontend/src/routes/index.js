@@ -10,6 +10,8 @@ import Cart from "~/pages/Cart";
 import About from "~/pages/About";
 import Checkout from "~/pages/Checkout";
 import OrderNotice from "~/pages/OrderNotice";
+import Invoices from "~/pages/Invoices";
+import InvoiceDetail from "~/pages/InvoiceDetail";
 
 const publicRoutes = [
   { path: config.routes.home, component: Home },
@@ -28,6 +30,11 @@ const publicRoutes = [
   { path: config.routes.about, component: About },
   { path: config.routes.checkout, component: Checkout },
   { path: config.routes.orderNotice, component: OrderNotice },
+  { path: config.routes.invoices, component: Invoices },
+  {
+    path: config.routes.invoices + "/:idInvoice",
+    component: InvoiceDetail,
+  },
 ];
 
 //Đăng nhập mới vào được không thì sẽ chuyển tới trang đăng nhập
