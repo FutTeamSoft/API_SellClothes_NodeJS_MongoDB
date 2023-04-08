@@ -12,7 +12,7 @@ const {
 } = require("../models/model.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 const useController = {
   addFeedback: async (req, res) => {
     try {
@@ -135,46 +135,61 @@ const useController = {
   updateCustomer: async (req, res) => {
     try {
       const { id } = req.params;
-      const { FullName, Email, PhoneNumber, AddressUser, PasswordUserOld, PassNew } =
-        req.body;
-  
+      const {
+        FullName,
+        Email,
+        PhoneNumber,
+        AddressUser,
+        PasswordUserOld,
+        PassNew,
+      } = req.body;
+
       // kiểm tra khách hàng tồn tại hay k
       const customer = await Account.findById(id);
       if (!customer) {
         return res.status(200).json({ message: "Không tìm thấy khách hàng" });
       }
-  
+
       // kiểm tra mật khẩu hiện tại có đúng không
       if (PasswordUserOld && PassNew) {
-        const isMatch = await bcrypt.compare(PasswordUserOld, customer.PasswordUser);
+        const isMatch = await bcrypt.compare(
+          PasswordUserOld,
+          customer.PasswordUser
+        );
         if (!isMatch) {
-          return res.status(200).json({ message: "Mật khẩu hiện tại không đúng" });
+          return res
+            .status(200)
+            .json({ message: "Mật khẩu hiện tại không đúng" });
         }
         const cur = await bcrypt.compare(PassNew, customer.PasswordUser);
         if (cur) {
-          return res.status(200).json({ message: "Mật khẩu không đươc trung với mật khẩu hiện tại!" });
+          return res
+            .status(200)
+            .json({
+              message: "Mật khẩu không đươc trung với mật khẩu hiện tại!",
+            });
         }
-      }else if(PasswordUserOld && !PassNew){
+      } else if (PasswordUserOld && !PassNew) {
         return res.status(200).json({ message: "Mời nhập mât khẩu mới!" });
-      }else if(!PasswordUserOld && PassNew){
+      } else if (!PasswordUserOld && PassNew) {
         return res.status(200).json({ message: "Mời nhập mât khẩu củ!" });
       }
-  
+
       // cập nhật khách hàng
       customer.FullName = FullName;
       customer.Email = Email;
       customer.PhoneNumber = PhoneNumber;
       customer.AddressUser = AddressUser;
-  
+
       // nếu không có mật khẩu mới, giữ nguyên mật khẩu cũ
       if (!PassNew && !PasswordUserOld) {
         customer.PasswordUser = customer.PasswordUser;
-      } else if(PassNew && PasswordUserOld) {
+      } else if (PassNew && PasswordUserOld) {
         // mã hóa mật khẩu mới
         const salt = await bcrypt.genSalt(10);
         customer.PasswordUser = await bcrypt.hash(PassNew, salt);
       }
-  
+
       // lưu custommer vào data
       await customer.save();
       res.status(200).json({
@@ -193,7 +208,60 @@ const useController = {
       res.status(200).json(err);
     }
   },
-  
+  changePassword: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { PasswordUserOld, PassNew } = req.body;
+
+      // kiểm tra khách hàng tồn tại hay k
+      const customer = await Account.findById(id);
+      if (!customer) {
+        return res.status(200).json({ message: "Không tìm thấy khách hàng" });
+      }
+
+      // kiểm tra mật khẩu hiện tại có đúng không
+      if (PasswordUserOld && PassNew) {
+        const isMatch = await bcrypt.compare(
+          PasswordUserOld,
+          customer.PasswordUser
+        );
+        if (!isMatch) {
+          return res
+            .status(200)
+            .json({ message: "Mật khẩu hiện tại không đúng" });
+        }
+        const cur = await bcrypt.compare(PassNew, customer.PasswordUser);
+        if (cur) {
+          return res
+            .status(200)
+            .json({
+              message: "Mật khẩu không đươc trung với mật khẩu hiện tại!",
+            });
+        }
+      } else if (PasswordUserOld && !PassNew) {
+        return res.status(200).json({ message: "Mời nhập mât khẩu mới!" });
+      } else if (!PasswordUserOld && PassNew) {
+        return res.status(200).json({ message: "Mời nhập mât khẩu củ!" });
+      }
+
+      // nếu không có mật khẩu mới, giữ nguyên mật khẩu cũ
+      if (!PassNew && !PasswordUserOld) {
+        customer.PasswordUser = customer.PasswordUser;
+      } else if (PassNew && PasswordUserOld) {
+        // mã hóa mật khẩu mới
+        const salt = await bcrypt.genSalt(10);
+        customer.PasswordUser = await bcrypt.hash(PassNew, salt);
+      }
+
+      // lưu custommer vào data
+      await customer.save();
+      res.status(200).json({
+        message: "Cập nhật thành công",
+      });
+    } catch (err) {
+      res.status(200).json(err);
+    }
+  },
   getAllAccount: async (req, res) => {
     try {
       const allAccount = await Account.find().lean();
@@ -267,57 +335,59 @@ const useController = {
       res.status(200).json(err);
     }
   },
-  updatePasswordWithEmail:async(req, res) => {
+  updatePasswordWithEmail: async (req, res) => {
     const email = req.params.email;
-  
+
     // Generate new random password
     const randomPassword = Math.floor(10000 + Math.random() * 90000);
-  
+
     try {
       // Find account by email
       const account = await Account.findOne({ Email: email });
       if (!account) {
-        return res.status(200).json({ message: 'Không tìm thấy tài khoản.' });
+        return res.status(200).json({ message: "Không tìm thấy tài khoản." });
       }
       // Hash new password
       const salt = await bcrypt.genSalt(10);
       const hash = await bcrypt.hash(randomPassword.toString(), salt);
-      
+
       // Update password in database
       account.PasswordUser = hash;
       await account.save();
-  
+
       // Send email with new password
       const transporter = nodemailer.createTransport({
-        service: 'vantuan181002@gmail.com',
+        service: "vantuan181002@gmail.com",
         port: 465,
         secure: true,
         auth: {
-          user: 'tuansk1002@gmail.com',
-          pass: '0373272294tuan',
+          user: "tuansk1002@gmail.com",
+          pass: "0373272294tuan",
         },
       });
-  
+
       const mailOptions = {
-        from: 'tuansk1002@gmail.com',
+        from: "tuansk1002@gmail.com",
         to: email,
-        subject: 'Mật khẩu mới của tài khoản của bạn',
+        subject: "Mật khẩu mới của tài khoản của bạn",
         text: `Mật khẩu mới của tài khoản của bạn là ${randomPassword}.`,
       };
-  
+
       transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
           console.log(error);
         } else {
-          console.log('Email sent: ' + info.response);
+          console.log("Email sent: " + info.response);
         }
       });
-  
+
       // Send response
-      return res.json({ message: 'Mật khẩu đã được cập nhật và gửi đến email của bạn.' });
+      return res.json({
+        message: "Mật khẩu đã được cập nhật và gửi đến email của bạn.",
+      });
     } catch (error) {
       console.error(error);
-      return res.status(200).json({ message: 'Đã có lỗi xảy ra.' });
+      return res.status(200).json({ message: "Đã có lỗi xảy ra." });
     }
   },
 };

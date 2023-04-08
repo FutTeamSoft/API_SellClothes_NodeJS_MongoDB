@@ -633,7 +633,7 @@ const productController = {
           CartProductSize,
         });
         await newCart.save();
-        res.status(200).json({ message: "Thêm vào giỏ hành thành công!" });
+        res.status(200).json({ message: "Thêm vào giỏ hàng thành công!" });
       } else {
         // Nếu sản phẩm và size đã có trong giỏ hàng, tăng số lượng sản phẩm
         cart.CartProductQuantity += CartProductQuantity;
@@ -643,7 +643,7 @@ const productController = {
           .json({ message: "Cập nhật số lượng sản phẩm thành công!" });
       }
     } catch (err) {
-      res.status(500).json(err);
+      res.status(500).json({ message: "Database error" });
     }
   },
 

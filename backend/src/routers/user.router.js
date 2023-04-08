@@ -219,6 +219,7 @@ const router = require("express").Router();
 router
   .all(authenticateToken)
   .put("/updateCustommer/:id", authenticateToken, userController.updateCustomer) //swagger
+  .put("/changePassword/:id", authenticateToken, userController.changePassword) //swagger
   .get("/getAllAccount", authenticateToken, userController.getAllAccount);
 
 //ADD CUSTOMER

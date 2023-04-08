@@ -102,3 +102,5 @@ const port = process.env.PORT || process.env.APP_PORT;
 app.listen(port, () => {
   console.log("Server up and running on PORT: ", port);
 });
+
+module.exports = app;
